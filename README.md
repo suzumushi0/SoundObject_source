@@ -3,7 +3,7 @@ SoundObject source code distribution.
 
 SoundObject creates a binaural sound that enables senses of three-dimensional sound localization from a monaural acoustic source and its positional information. It is provided as a VST 3 plug-in for digital audio workstations (DAW) and supports 44.1KHz, 48KHz, and 96KHz sampling rates. OS environment is 64bit Windows 10. Refer to the following document for details.
 
-<a href="https://suzumushi0.hatenablog.com/entry/SOv1/SF_JP">suzumushi0.hatenablog.com</a>
+<a href="https://suzumushi0.hatenablog.com/entry/SOv1/SF_JP"></a>
 
 https://suzumushi0.hatenablog.com/entry/SOv1/SO_EN
 
