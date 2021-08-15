@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SODSPparam.cpp
+// 2021-8-15		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -22,7 +22,7 @@ ParamValue SODSPparam:: calculateValue (ParamValue x, ParamValue y)
 void SODSPparam:: calculateXY (ParamValue value, ParamValue& x, ParamValue& y)
 {
 	x = std::floor (value * 1'000.0 + 0.5) * 0.001;
-	double xx = x = std::floor (value * 10'000.0) * 0.000'1;
+	double xx = std::floor (value * 10'000.0) * 0.000'1;
 	y = std::floor ((value - xx) * 10'000'000.0) * 0.001;
 }
 
@@ -162,9 +162,11 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		double s_x_2 = pow (s_x, 2.0);
 		double s_z_2 = pow (s_z, 2.0);
 		double med_r = sqrt (s_x_2 + s_z_2);
-		theta_p = (med_r == 0.0 ? theta_p : acos (s_x / med_r));
-		if (s_z < 0.0)
-			theta_p = - theta_p;
+		if (med_r != 0.0) {
+			theta_p = acos (s_x / med_r);
+			if (s_z < 0.0)
+				theta_p = - theta_p;			
+		}
 
 		double r = sqrt (s_x_2 + pow (s_y, 2.0) + s_z_2);
 		double r_2 = pow (r, 2.0);

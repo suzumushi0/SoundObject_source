@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SO2ndordIIRfilters.h
+// 2021-8-15		SO2ndordIIRfilters.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -17,20 +17,14 @@ namespace suzumushi {
 template <typename TYPE>
 class SO2ndordIIRfilter {
 public:
-	static void setup (const TYPE* cof_a, const TYPE* cof_b);
+	void setup (const TYPE* cof_a, const TYPE* cof_b);
 	virtual TYPE process (const TYPE xn);
 	void reset ();
 private:
 	TYPE z [3] = {0.0, 0.0, 0.0};	// delay registers. z [n] represents z^(-n)
-	static TYPE a [3];				// feedback filter coefficients. a [0] is unused
-	static TYPE b [3];				// feedforward filter coefficients
+	TYPE a [3] = {0.0, 0.0, 0.0};	// feedback filter coefficients. a [0] is unused
+	TYPE b [3] = {0.0, 0.0, 0.0};	// feedforward filter coefficients
 };
-
-template <typename TYPE>
-TYPE SO2ndordIIRfilter <TYPE>:: a [3] = {0.0, 0.0, 0.0};
-
-template <typename TYPE>
-TYPE SO2ndordIIRfilter <TYPE>:: b [3] = {0.0, 0.0, 0.0};
 
 template <typename TYPE>
 void SO2ndordIIRfilter <TYPE>:: setup (const TYPE* cof_a, const TYPE* cof_b)
@@ -64,7 +58,7 @@ inline void SO2ndordIIRfilter <TYPE>:: reset ()
 template <typename TYPE>
 class SOsphere_scattering: public SO2ndordIIRfilter <TYPE> {
 public:
-	static void setup (const TYPE cT, const TYPE a);
+	void setup (const TYPE cT, const TYPE a);
 	TYPE process (const TYPE xn, const TYPE cos_thetao);
 };
 

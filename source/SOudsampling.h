@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SOudsampling.h
+// 2021-8-15		SOudsampling.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -34,8 +34,7 @@ template <typename TYPE>
 class SOudsampling {
 public:
 	void setup (const TYPE inv_cT, const TYPE distance);
-	static void input (const TYPE xn);			// data input
-	TYPE process (const TYPE decay);
+	TYPE process (const TYPE xn, const TYPE decay);
 	void reset ();
 	SOudsampling ();
 private:
@@ -48,7 +47,7 @@ private:
 	int TBL_OFFSET {0};											// IR lookup offset for N > M 
 
 	// variables for polyphase decomposition
-	static SODDL <TYPE, IR_L> IDL;								// Input delay line
+	SODDL <TYPE, IR_L> IDL;										// Input delay line
 	SODDL <TYPE, ODL_LEN> ODL;									// Output delay line
 	int odl_at {0};												// Delay of output data
 	int M {N};													// Parameter for Doppler effect (fo / fs = N / M)
@@ -58,9 +57,6 @@ private:
 
 template <typename TYPE>
 TYPE SOudsampling <TYPE>:: IR_TBL [IR_CENTER + 1];
-
-template <typename TYPE>
-SODDL <TYPE, IR_L> SOudsampling <TYPE>:: IDL;
 
 template <typename TYPE>
 SOudsampling <TYPE>:: SOudsampling ()
@@ -124,14 +120,9 @@ void SOudsampling <TYPE>:: setup (const TYPE inv_cT, const TYPE distance)
 }
 
 template <typename TYPE>
-void SOudsampling <TYPE>:: input (const TYPE xn)
+TYPE SOudsampling <TYPE>:: process (const TYPE xn, const TYPE decay)
 {
 	IDL.push (xn);
-}
-
-template <typename TYPE>
-TYPE SOudsampling <TYPE>:: process (const TYPE decay)
-{
 	if (M > N) {
 		TYPE sum = 0.0;
 		int idl_at = IR_L - 1;

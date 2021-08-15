@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SOpinna.h
+// 2021-8-15		SOpinna.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -60,6 +60,8 @@ private:
 	const TYPE* IR;							// pointer to IR
 	int IR_LEN {0};							// IR length
 	SODDL <TYPE, IDL_LEN> IDL;				// input delay line
+	int prev_angle {0};						// for limiter
+	bool first_frame {true};				// The first frame after reset() or initialization
 };
 
 template <typename TYPE>
@@ -201,9 +203,34 @@ void SOpinna_scattering <TYPE>:: setup (const TYPE theta_p, const int HRIR)
 		angular_resolution = angular_resolution_3;
 
 	int angle = theta_p * 180.0 / angular_resolution / pi + 0.5;
-	if (angle <= - 180 / angular_resolution)
+	if (angle <= -180 / angular_resolution)
 		angle = 180 / angular_resolution;
+
+	// smoothing
+	if (first_frame) {
+		first_frame = false;
+	} else {
+		int diff = angle - prev_angle;
+		if (abs (diff) > 180 / angular_resolution) {
+			if (diff > 0)
+				diff -= 360 / angular_resolution;
+			else
+				diff += 360 / angular_resolution;
+		}
+		if (abs (diff) > angular_resolution_15 / angular_resolution) {
+			if (diff > 0) {
+				angle = prev_angle + angular_resolution_15 / angular_resolution;
+				if (angle > 180 / angular_resolution)
+					angle -= 360 / angular_resolution;
+			} else {
+				angle = prev_angle - angular_resolution_15 / angular_resolution;
+				if (angle <= -180 /angular_resolution)
+					angle += 360 / angular_resolution;
+			}
+		}
+	}
 	IR = IR_TBL [HRIR] + (180 / angular_resolution - angle) * IR_LEN;
+	prev_angle = angle;
 }
 
 template <typename TYPE>
@@ -221,6 +248,7 @@ template <typename TYPE>
 void SOpinna_scattering <TYPE>:: reset ()
 {
 	IDL.reset ();
+	first_frame = true;
 }
 
 
