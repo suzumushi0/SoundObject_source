@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-15		SODSPparam.cpp
+// 2021-8-19		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -65,7 +65,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			double r_cos_theta = gp.r * cos (theta_rad);
 			gp.s_x = std::min (std::max (r_cos_theta * cos (phi_rad), s_x_min), s_x_max);
 			gp.s_y = std::min (std::max (r_cos_theta * sin (phi_rad), s_y_min), s_y_max);
-			if (! gp.phi_changed)
+			if (gp.r_theta_changed)
 				gp.s_z = std::min (std::max (gp.r * sin (theta_rad), s_z_min), s_z_max);
 			gp.r_theta_changed = gp.phi_changed = false;
 		}
