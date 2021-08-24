@@ -106,7 +106,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE:STRING=/INCREMENTAL:NO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO:STRING=/debug /INCREMENTAL
 
 //Path to a program.
-CMAKE_MT:FILEPATH=CMAKE_MT-NOTFOUND
+CMAKE_MT:FILEPATH=C:/Program Files (x86)/Windows Kits/10/bin/10.0.18362.0/x64/mt.exe
 
 //Value Computed by CMake
 CMAKE_PROJECT_DESCRIPTION:STATIC=
@@ -209,12 +209,14 @@ SMTG_CREATE_BUNDLE_FOR_WINDOWS:BOOL=ON
 //Create symbolic link for each Plug-in (you need to have the Administrator
 // right on Windows! or change the Local Group Policy to allow
 // create symbolic links)
-SMTG_CREATE_PLUGIN_LINK:BOOL=OFF
+// suzumushi
+SMTG_CREATE_PLUGIN_LINK:BOOL=False
 
 //Customize output location for binaries
 SMTG_CUSTOM_BINARY_LOCATION:PATH=
 
 //C++ standard version used for plugins: 14, 17, 20
+// suzumushi
 SMTG_CXX_STANDARD:STRING=20
 
 //Enable Address Sanitizer
@@ -260,19 +262,19 @@ sdk_hosting_LIB_DEPENDS:STATIC=general;sdk_common;
 smtg_base_BINARY_DIR:STATIC=D:/VST/SoundObject/build/vst3sdk/base
 
 //Value Computed by CMake
-smtg_base_SOURCE_DIR:STATIC=D:/VST/VST_SDK/VST3_SDK/base
+smtg_base_SOURCE_DIR:STATIC=D:/VST/VST_SDK/vst3sdk/base
 
 //Value Computed by CMake
 smtg_pluginterfaces_BINARY_DIR:STATIC=D:/VST/SoundObject/build/vst3sdk/pluginterfaces
 
 //Value Computed by CMake
-smtg_pluginterfaces_SOURCE_DIR:STATIC=D:/VST/VST_SDK/VST3_SDK/pluginterfaces
+smtg_pluginterfaces_SOURCE_DIR:STATIC=D:/VST/VST_SDK/vst3sdk/pluginterfaces
 
 //Value Computed by CMake
 smtg_public_sdk_BINARY_DIR:STATIC=D:/VST/SoundObject/build/vst3sdk/public.sdk
 
 //Value Computed by CMake
-smtg_public_sdk_SOURCE_DIR:STATIC=D:/VST/VST_SDK/VST3_SDK/public.sdk
+smtg_public_sdk_SOURCE_DIR:STATIC=D:/VST/VST_SDK/vst3sdk/public.sdk
 
 //Dependencies for the target
 vstgui_support_LIB_DEPENDS:STATIC=general;vstgui_uidescription;general;base;
@@ -284,7 +286,7 @@ vstgui_uidescription_LIB_DEPENDS:STATIC=general;vstgui;
 vstsdk_BINARY_DIR:STATIC=D:/VST/SoundObject/build/vst3sdk
 
 //Value Computed by CMake
-vstsdk_SOURCE_DIR:STATIC=D:/VST/VST_SDK/VST3_SDK
+vstsdk_SOURCE_DIR:STATIC=D:/VST/VST_SDK/vst3sdk
 
 
 ########################
