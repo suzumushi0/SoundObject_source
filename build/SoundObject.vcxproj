@@ -60,7 +60,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\VST\VST_SDK\VST3_SDK\vstgui4;D:\VST\VST_SDK\VST3_SDK\base\..;D:\VST\VST_SDK\VST3_SDK\public.sdk\..;D:\VST\VST_SDK\VST3_SDK\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VST\VST_SDK\vst3sdk\vstgui4;D:\VST\VST_SDK\vst3sdk\base\..;D:\VST\VST_SDK\vst3sdk\public.sdk\..;D:\VST\VST_SDK\vst3sdk\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -81,10 +81,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;SMTG_RENAME_ASSERT=1;DEVELOPMENT=1;_UNICODE;VSTGUI_LIVE_EDITING;VSTGUI_ENABLE_DEPRECATED_METHODS=1;SMTG_MODULE_IS_BUNDLE=1;CMAKE_INTDIR=\"Debug\";SoundObject_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\VST\VST_SDK\VST3_SDK\vstgui4;D:\VST\VST_SDK\VST3_SDK\base\..;D:\VST\VST_SDK\VST3_SDK\public.sdk\..;D:\VST\VST_SDK\VST3_SDK\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VST\VST_SDK\vst3sdk\vstgui4;D:\VST\VST_SDK\vst3sdk\base\..;D:\VST\VST_SDK\vst3sdk\public.sdk\..;D:\VST\VST_SDK\vst3sdk\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\VST\VST_SDK\VST3_SDK\vstgui4;D:\VST\VST_SDK\VST3_SDK\base\..;D:\VST\VST_SDK\VST3_SDK\public.sdk\..;D:\VST\VST_SDK\VST3_SDK\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VST\VST_SDK\vst3sdk\vstgui4;D:\VST\VST_SDK\vst3sdk\base\..;D:\VST\VST_SDK\vst3sdk\public.sdk\..;D:\VST\VST_SDK\vst3sdk\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -172,7 +172,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\VST\VST_SDK\VST3_SDK\vstgui4;D:\VST\VST_SDK\VST3_SDK\base\..;D:\VST\VST_SDK\VST3_SDK\public.sdk\..;D:\VST\VST_SDK\VST3_SDK\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VST\VST_SDK\vst3sdk\vstgui4;D:\VST\VST_SDK\vst3sdk\base\..;D:\VST\VST_SDK\vst3sdk\public.sdk\..;D:\VST\VST_SDK\vst3sdk\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>6031;6308;6330;6385;6386;28125;28251;4221</DisableSpecificWarnings>
@@ -196,10 +196,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;SMTG_RENAME_ASSERT=1;RELEASE=1;_UNICODE;VSTGUI_ENABLE_DEPRECATED_METHODS=1;SMTG_MODULE_IS_BUNDLE=1;CMAKE_INTDIR=\"Release\";SoundObject_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\VST\VST_SDK\VST3_SDK\vstgui4;D:\VST\VST_SDK\VST3_SDK\base\..;D:\VST\VST_SDK\VST3_SDK\public.sdk\..;D:\VST\VST_SDK\VST3_SDK\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VST\VST_SDK\vst3sdk\vstgui4;D:\VST\VST_SDK\vst3sdk\base\..;D:\VST\VST_SDK\vst3sdk\public.sdk\..;D:\VST\VST_SDK\vst3sdk\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>D:\VST\VST_SDK\VST3_SDK\vstgui4;D:\VST\VST_SDK\VST3_SDK\base\..;D:\VST\VST_SDK\VST3_SDK\public.sdk\..;D:\VST\VST_SDK\VST3_SDK\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\VST\VST_SDK\vst3sdk\vstgui4;D:\VST\VST_SDK\vst3sdk\base\..;D:\VST\VST_SDK\vst3sdk\public.sdk\..;D:\VST\VST_SDK\vst3sdk\pluginterfaces\..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -316,7 +316,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\resource\resource.h" />
     <ClInclude Include="D:\VST\SoundObject\source\Aachen_KEMAR\IR_TBL_L_44.h" />
     <ClInclude Include="D:\VST\SoundObject\source\Aachen_KEMAR\IR_TBL_R_44.h" />
     <ClInclude Include="D:\VST\SoundObject\source\Aachen_KEMAR\IR_TBL_L_48.h" />
@@ -346,6 +345,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\VST\SoundObject\source\SOentry.cpp" />
     <ClInclude Include="D:\VST\SoundObject\source\SOextparam.h" />
     <ClCompile Include="D:\VST\SoundObject\source\SOextparam.cpp" />
+    <ClInclude Include="D:\VST\SoundObject\source\SOHVLines.h" />
+    <ClCompile Include="D:\VST\SoundObject\source\SOHVLines.cpp" />
+    <ClCompile Include="D:\VST\SoundObject\source\SOHVLinescreator.cpp" />
     <ClInclude Include="D:\VST\SoundObject\source\SOLPF.h" />
     <ClInclude Include="D:\VST\SoundObject\source\SOparam.h" />
     <ClInclude Include="D:\VST\SoundObject\source\SOpinna.h" />
@@ -353,8 +355,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="D:\VST\SoundObject\source\SOprocessor.cpp" />
     <ClInclude Include="D:\VST\SoundObject\source\SOudsampling.h" />
     <ClInclude Include="D:\VST\SoundObject\source\version.h" />
-    <ClCompile Include="D:\VST\VST_SDK\VST3_SDK\public.sdk\source\main\dllmain.cpp" />
-    <None Include="build.licenseheader" />
+    <ClCompile Include="D:\VST\VST_SDK\vst3sdk\public.sdk\source\main\dllmain.cpp" />
+    <None Include="build2.licenseheader" />
     <None Include="D:\VST\SoundObject\resource\SOeditor.uidesc">
     </None>
     <ResourceCompile Include="D:\VST\SoundObject\resource\win32resource.rc" />
@@ -398,16 +400,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{197FEDB3-288A-367B-AE65-986EEF6BA211}</Project>
       <Name>vstgui_uidescription</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\resource\46570030EE935D3495AAEFCF49F7F2CF_snapshot.png" />
-    <Image Include="..\resource\46570030EE935D3495AAEFCF49F7F2CF_snapshot_2.0x.png" />
-    <Image Include="..\resource\about.png" />
-    <Image Include="..\resource\handle.png" />
-    <Image Include="..\resource\line.png" />
-    <Image Include="..\resource\slider.png" />
-    <Image Include="..\resource\xypad.png" />
-    <Image Include="..\resource\yzpad.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -13,10 +13,16 @@
     <ClCompile Include="D:\VST\SoundObject\source\SOextparam.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="D:\VST\SoundObject\source\SOHVLines.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="D:\VST\SoundObject\source\SOHVLinescreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="D:\VST\SoundObject\source\SOprocessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\VST\VST_SDK\VST3_SDK\public.sdk\source\main\dllmain.cpp">
+    <ClCompile Include="D:\VST\VST_SDK\vst3sdk\public.sdk\source\main\dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,6 +46,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VST\SoundObject\source\SOextparam.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D:\VST\SoundObject\source\SOHVLines.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D:\VST\SoundObject\source\SOLPF.h">
@@ -96,9 +105,6 @@
     <ClInclude Include="D:\VST\SoundObject\source\York_KEMAR\IR_TBL_R_96.h">
       <Filter>Header Files\York KEMAR</Filter>
     </ClInclude>
-    <ClInclude Include="D:\VST\SoundObject\source\York_KU100\IR_TBL_R_96.h">
-      <Filter>Header Files\York KU 100</Filter>
-    </ClInclude>
     <ClInclude Include="D:\VST\SoundObject\source\York_KU100\IR_TBL_L_44.h">
       <Filter>Header Files\York KU 100</Filter>
     </ClInclude>
@@ -114,14 +120,16 @@
     <ClInclude Include="D:\VST\SoundObject\source\York_KU100\IR_TBL_R_48.h">
       <Filter>Header Files\York KU 100</Filter>
     </ClInclude>
-    <ClInclude Include="..\resource\resource.h" />
+    <ClInclude Include="D:\VST\SoundObject\source\York_KU100\IR_TBL_R_96.h">
+      <Filter>Header Files\York KU 100</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="D:\VST\SoundObject\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="D:\VST\SoundObject\resource\SOeditor.uidesc" />
-    <None Include="build.licenseheader" />
+    <None Include="build2.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="D:\VST\SoundObject\resource\win32resource.rc">
@@ -136,42 +144,13 @@
       <UniqueIdentifier>{4AC770D1-DDC8-3DBB-932E-1748FCCB998E}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Aachen KEMAR">
-      <UniqueIdentifier>{b4dbf8ca-7cf5-4c87-b858-78aefcba9252}</UniqueIdentifier>
+      <UniqueIdentifier>{f0b203cf-ccb4-4c90-9810-d605fb62c86b}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\York KEMAR">
-      <UniqueIdentifier>{abd3d5a5-009a-4e84-acfb-b3c619148af4}</UniqueIdentifier>
+      <UniqueIdentifier>{d55f64da-329a-4d0f-8a2e-3d95d9306e44}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\York KU 100">
-      <UniqueIdentifier>{562920aa-d939-46c2-a1c3-f688316044aa}</UniqueIdentifier>
+      <UniqueIdentifier>{9fb81541-fe91-4c2b-af0b-a258ab9caa24}</UniqueIdentifier>
     </Filter>
-    <Filter Include="png Files">
-      <UniqueIdentifier>{49232185-1ebc-432b-a9a4-bec118f2318f}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\resource\46570030EE935D3495AAEFCF49F7F2CF_snapshot.png">
-      <Filter>png Files</Filter>
-    </Image>
-    <Image Include="..\resource\46570030EE935D3495AAEFCF49F7F2CF_snapshot_2.0x.png">
-      <Filter>png Files</Filter>
-    </Image>
-    <Image Include="..\resource\handle.png">
-      <Filter>png Files</Filter>
-    </Image>
-    <Image Include="..\resource\line.png">
-      <Filter>png Files</Filter>
-    </Image>
-    <Image Include="..\resource\about.png">
-      <Filter>png Files</Filter>
-    </Image>
-    <Image Include="..\resource\xypad.png">
-      <Filter>png Files</Filter>
-    </Image>
-    <Image Include="..\resource\yzpad.png">
-      <Filter>png Files</Filter>
-    </Image>
-    <Image Include="..\resource\slider.png">
-      <Filter>png Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>
