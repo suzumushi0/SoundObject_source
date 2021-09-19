@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SOparam.h
+// 2021-9-18		SOparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -68,14 +68,14 @@ constexpr int32		 phi_flags {ParameterInfo::kCanAutomate};
 
 // xyad: position of the xy Pad
 constexpr ParamValue xypad_min {0.0};
-constexpr ParamValue xypad_max {1.0};	
+constexpr ParamValue xypad_max {2.0};	
 constexpr ParamValue xypad_default {0.0};
 constexpr int32		 xypad_step {0};		// continuous 
 constexpr int32		 xypad_flags {ParameterInfo::kNoFlags};
 
 // yzpad: position of the yz Pad
 constexpr ParamValue yzpad_min {0.0};
-constexpr ParamValue yzpad_max {1.0};	
+constexpr ParamValue yzpad_max {2.0};	
 constexpr ParamValue yzpad_default {0.0};
 constexpr int32		 yzpad_step {0};		// continuous 
 constexpr int32		 yzpad_flags {ParameterInfo::kNoFlags};
@@ -111,14 +111,14 @@ constexpr int32		 a_flags {ParameterInfo::kNoFlags};
 // r_x: dimensions of the reverberation room, depth [m]
 constexpr ParamValue r_x_min {min_dist * 2.0};
 constexpr ParamValue r_x_max {max_side_len};
-constexpr ParamValue r_x_default {3.7};
+constexpr ParamValue r_x_default {2.9};
 constexpr int32		 r_x_step {0};			// continuous 
 constexpr int32		 r_x_flags {ParameterInfo::kNoFlags};
 
 // r_y: dimensions of the reverberation room, width [m]
 constexpr ParamValue r_y_min {min_dist * 2.0};
 constexpr ParamValue r_y_max {max_side_len};
-constexpr ParamValue r_y_default {2.9};
+constexpr ParamValue r_y_default {4.1};
 constexpr int32		 r_y_step {0};			// continuous 
 constexpr int32		 r_y_flags {ParameterInfo::kNoFlags};
 
@@ -139,16 +139,23 @@ constexpr int32		 c_x_flags {ParameterInfo::kNoFlags};
 // c_y: center of the sphere [m]
 constexpr ParamValue c_y_min {0.0};
 constexpr ParamValue c_y_max {max_side_len / 2.0};
-constexpr ParamValue c_y_default {1.6};
+constexpr ParamValue c_y_default {2.2};
 constexpr int32		 c_y_step {0};			// continuous 
 constexpr int32		 c_y_flags {ParameterInfo::kNoFlags};
 
 // c_z: center of the sphere [m]
 constexpr ParamValue c_z_min {0.0};
 constexpr ParamValue c_z_max {max_side_len / 2.0};
-constexpr ParamValue c_z_default {1.0};
+constexpr ParamValue c_z_default {0.8};
 constexpr int32		 c_z_step {0};			// continuous 
 constexpr int32		 c_z_flags {ParameterInfo::kNoFlags};
+
+// Horizontal and vertical lines for XYPAD and YZPAD
+constexpr ParamValue hv_min {0.0};
+constexpr ParamValue hv_max {2.0};
+constexpr ParamValue hv_default {0.0};
+constexpr int32		 hv_step {0};			// continuous 
+constexpr int32		 hv_flags {ParameterInfo::kNoFlags};
 
 // hrir: HRIR DB selector
 constexpr int32		hrir_flags {ParameterInfo::kIsList};
@@ -203,7 +210,10 @@ enum {
 	// control parameters
 	HRIR,					// HRIR selector
 	OUTPUT,					// output selector
-	BYPASS					// bypass flag
+	BYPASS,					// bypass flag
+	// Horizontal and vertical lines for XYPAD and YZPAD
+	HV_XY,					// xy Pad
+	HV_YZ					// yz Pad
 };
 
 //  GUI and host facing parameters in processor class
@@ -235,6 +245,7 @@ struct GUI_param {
 	int32 bypass;			// byass flag
 	// flags
 	bool first_frame;		// the first frame after dsp_reset()
+	bool zerone;			// for parameters feedback of HVLines 
 	bool param_changed;		// GUI and host facing parameters are updated (real-time parameters only)
 	bool r_theta_changed;	// r and/or theta are updated
 	bool phi_changed;		// phi is updated
@@ -264,6 +275,7 @@ struct GUI_param {
 		output = 0;
 		bypass = bypass_default;
 		first_frame = true;
+		zerone = true;
 		param_changed = false;
 		r_theta_changed = false;
 		phi_changed = false;

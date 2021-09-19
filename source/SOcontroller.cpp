@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SOcontroller.cpp
+// 2021-9-18		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -186,6 +186,18 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 		STR16 ("Bypass"), BYPASS, nullptr,
 		bypass_min, bypass_max, bypass_default, bypass_step, bypass_flags);
 	parameters.addParameter (bypass_param);
+
+	// hv_xy: HVLines for xy Pad
+	Vst::RangeParameter* hvxy_param = new Vst::RangeParameter (
+		STR16 ("HVLines_xy"), HV_XY, nullptr,
+		hv_min, hv_max, hv_default, hv_step, hv_flags);
+	parameters.addParameter (hvxy_param);
+
+	// hv_yz: HVLines for yz Pad
+	Vst::RangeParameter* hvyz_param = new Vst::RangeParameter (
+		STR16 ("HVLines_yz"), HV_YZ, nullptr,
+		hv_min, hv_max, hv_default, hv_step, hv_flags);
+	parameters.addParameter (hvyz_param);
 
 	return (result);
 }
