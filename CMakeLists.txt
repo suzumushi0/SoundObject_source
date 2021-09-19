@@ -46,6 +46,9 @@ smtg_add_vst3plugin(SoundObject
     source/SOentry.cpp
     source/SOextparam.h
     source/SOextparam.cpp
+    source/SOHVLines.h
+    source/SOHVLines.cpp
+    source/SOHVLinescreator.cpp
     source/SOLPF.h
     source/SOparam.h
     source/SOpinna.h
