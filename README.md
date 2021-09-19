@@ -10,7 +10,7 @@ SoundObject はモノラル音源とその位置情報から 3 次元の定位�
 
 https://suzumushi0.hatenablog.com/entry/SOv1/SO_JP
 
-![46570030EE935D3495AAEFCF49F7F2CF_snapshot_2 0x](https://user-images.githubusercontent.com/67182469/130309822-6da4b5c9-ab15-4685-b37b-f9453bac45af.png)
+![capture](https://user-images.githubusercontent.com/67182469/133911542-5bc9e728-c083-4673-8c10-10b2547825ca.PNG)
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
 
