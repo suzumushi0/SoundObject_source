@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-15		SOprocessor.cpp
+// 2021-9-23		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -148,8 +148,6 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 						case REFLECTANCE:
 							update = value * (reflectance_max - reflectance_min) + reflectance_min;
 							if (gp.reflectance != update) {
-								if (gp.reflectance == reflectance_min)
-									dsp_reset ();			// return from non-reflection
 								gp.reflectance = update;
 								gp.param_changed = true;
 							}
@@ -165,24 +163,47 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 							gp.a = value * (a_max - a_min) + a_min;
 							break;
 						case R_X:
-							gp.r_x = value * (r_x_max - r_x_min) + r_x_min;
+							update = value * (r_x_max - r_x_min) + r_x_min;
+							if (gp.r_x != update) {
+								gp.r_x = update;
+								gp.room_update ();
+							}
 							break;
 						case R_Y:
-							gp.r_y = value * (r_y_max - r_y_min) + r_y_min;
+							update = value * (r_y_max - r_y_min) + r_y_min;
+							if (gp.r_y != update) {
+								gp.r_y = update;
+								gp.room_update ();
+							}
 							break;
 						case R_Z:
-							gp.r_z = value * (r_z_max - r_z_min) + r_z_min;
+							update = value * (r_z_max - r_z_min) + r_z_min;
+							if (gp.r_z != update) {
+								gp.r_z = update;
+								gp.room_update ();
+							}
 							break;
 						case C_X:
-							gp.c_x = value * (c_x_max - c_x_min) + c_x_min;
+							update = value * (c_x_max - c_x_min) + c_x_min;
+							if (gp.c_x != update) {
+								gp.c_x = update;
+								gp.room_update ();
+							}
 							break;
 						case C_Y:
-							gp.c_y = value * (c_y_max - c_y_min) + c_y_min;
+							update = value * (c_y_max - c_y_min) + c_y_min;
+							if (gp.c_y != update) {
+								gp.c_y = update;
+								gp.room_update ();
+							}
 							break;
 						case C_Z:
-							gp.c_z = value * (c_z_max - c_z_min) + c_z_min;
+							update = value * (c_z_max - c_z_min) + c_z_min;
+							if (gp.c_z != update) {
+								gp.c_z = update;
+								gp.room_update ();
+							}
 							break;
-
 						case HRIR:
 							gp.hrir = static_cast <int32> (value * (HRIR_LIST_LEN - 1) + 0.5);
 							break;
@@ -254,16 +275,14 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 				up_down_sampling_dR.setup (dp.inv_cT, dp.distance_R);
 				pinna_scattering_dL.setup (dp.theta_p, gp.hrir);
 				pinna_scattering_dR.setup (dp.theta_p, gp.hrir);
-				if (dp.reflection) {
-					for (int i = 0; i < 6; i++) {
-						up_down_sampling_rL [i].setup (dp.inv_cT, dp.v_distance_L [i]);
-						up_down_sampling_rR [i].setup (dp.inv_cT, dp.v_distance_R [i]);
-						pinna_scattering_rL [i].setup (dp.v_theta_p [i], gp.hrir);
-						pinna_scattering_rR [i].setup (dp.v_theta_p [i], gp.hrir);
-					}
-					LPF_L.setup (gp.fc, processSetup.sampleRate);
-					LPF_R.setup (gp.fc, processSetup.sampleRate);
+				for (int i = 0; i < 6; i++) {
+					up_down_sampling_rL [i].setup (dp.inv_cT, dp.v_distance_L [i]);
+					up_down_sampling_rR [i].setup (dp.inv_cT, dp.v_distance_R [i]);
+					pinna_scattering_rL [i].setup (dp.v_theta_p [i], gp.hrir);
+					pinna_scattering_rR [i].setup (dp.v_theta_p [i], gp.hrir);
 				}
+				LPF_L.setup (gp.fc, processSetup.sampleRate);
+				LPF_R.setup (gp.fc, processSetup.sampleRate);
 			}
 			dp.param_smoothing ();
 			double d_ud_L, d_ud_R;
@@ -279,26 +298,22 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			double d_out_L = pinna_scattering_dL.process (d_sc_L);
 			double d_out_R = pinna_scattering_dR.process (d_sc_R);
 			double r_out_L = 0.0, r_out_R = 0.0;
-			if (! dp.reflection) {
-				r_out_L = r_out_R = 0.0;
-			} else {
-				for (int i = 0; i < 6; i++) {
-					double r_ud_L, r_ud_R;
-					if (data.inputs[0].silenceFlags == 0) {
-						r_ud_L = up_down_sampling_rL [i].process (*in, dp.v_decay [i]);
-						r_ud_R = up_down_sampling_rR [i].process (*in, dp.v_decay [i]);
-					} else {
-						r_ud_L = up_down_sampling_rL [i].process (0.0, dp.v_decay [i]);
-						r_ud_R = up_down_sampling_rR [i].process (0.0, dp.v_decay [i]);
-					}
-					double r_sc_L = sphere_scattering_rL [i].process (r_ud_L, dp.v_cos_theta_o [i]);
-					double r_sc_R = sphere_scattering_rR [i].process (r_ud_R, - dp.v_cos_theta_o [i]);
-					r_out_L += pinna_scattering_rL [i].process (r_sc_L);
-					r_out_R += pinna_scattering_rR [i].process (r_sc_R);
+			for (int i = 0; i < 6; i++) {
+				double r_ud_L, r_ud_R;
+				if (data.inputs[0].silenceFlags == 0) {
+					r_ud_L = up_down_sampling_rL [i].process (*in, dp.v_decay [i]);
+					r_ud_R = up_down_sampling_rR [i].process (*in, dp.v_decay [i]);
+				} else {
+					r_ud_L = up_down_sampling_rL [i].process (0.0, dp.v_decay [i]);
+					r_ud_R = up_down_sampling_rR [i].process (0.0, dp.v_decay [i]);
 				}
-				r_out_L = LPF_L.process (r_out_L);
-				r_out_R = LPF_R.process (r_out_R);
+				double r_sc_L = sphere_scattering_rL [i].process (r_ud_L, dp.v_cos_theta_o [i]);
+				double r_sc_R = sphere_scattering_rR [i].process (r_ud_R, - dp.v_cos_theta_o [i]);
+				r_out_L += pinna_scattering_rL [i].process (r_sc_L);
+				r_out_R += pinna_scattering_rR [i].process (r_sc_R);
 			}
+			r_out_L = LPF_L.process (r_out_L);
+			r_out_R = LPF_R.process (r_out_R);
 			in++;
 			switch (gp.output) {
 				case COMBINED_WAVES:

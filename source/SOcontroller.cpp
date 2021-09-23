@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-9-18		SOcontroller.cpp
+// 2021-9-21		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -91,10 +91,9 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 	parameters.addParameter (yzpad_param);
 
 	// reflectance
-	Vst::InfParameter* reflectance_param = new Vst::InfParameter (
+	Vst::RangeParameter* reflectance_param = new Vst::RangeParameter (
 		STR16 ("Reflectance"), REFLECTANCE, STR16 ("dB"),
-		reflectance_min, reflectance_max, reflectance_default, reflectance_step, 
-		reflectance_flags, true, false);
+		reflectance_min, reflectance_max, reflectance_default, reflectance_step, reflectance_flags);
 	reflectance_param -> setPrecision (precision1);
 	parameters.addParameter (reflectance_param);
 

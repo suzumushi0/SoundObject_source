@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SODSPparam.h
+// 2021-9-21		SODSPparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -41,7 +41,6 @@ public:
 	double decay_L {1.0};
 	double decay_R {1.0};
 	// real-time parameters for reflected waves
-	bool reflection {false};
 	valarray <double> v_cos_theta_o {valarray <double> (0.0, 6)};
 	valarray <double> v_theta_p {valarray <double> (0.0, 6)};
 	valarray <double> v_distance_L {valarray <double> (1.0, 6)};

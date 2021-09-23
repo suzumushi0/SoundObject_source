@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-9-18		SOparam.h
+// 2021-9-23		SOparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -103,7 +103,7 @@ constexpr int32		 c_flags {ParameterInfo::kNoFlags};
 
 // a: radius of the sphere [mm]
 constexpr ParamValue a_min {10.0};
-constexpr ParamValue a_max {250.0};
+constexpr ParamValue a_max {min_dist / 2.0 * 1'000};
 constexpr ParamValue a_default {143.0 / 2.0};
 constexpr int32		 a_step {0};			// continuous 
 constexpr int32		 a_flags {ParameterInfo::kNoFlags};
@@ -130,21 +130,21 @@ constexpr int32		 r_z_step {0};			// continuous
 constexpr int32		 r_z_flags {ParameterInfo::kNoFlags};
 
 // c_x: center of the sphere [m]
-constexpr ParamValue c_x_min {0.0};
+constexpr ParamValue c_x_min {min_dist};
 constexpr ParamValue c_x_max {max_side_len / 2.0};
 constexpr ParamValue c_x_default {1.8};
 constexpr int32		 c_x_step {0};			// continuous 
 constexpr int32		 c_x_flags {ParameterInfo::kNoFlags};
 
 // c_y: center of the sphere [m]
-constexpr ParamValue c_y_min {0.0};
+constexpr ParamValue c_y_min {min_dist};
 constexpr ParamValue c_y_max {max_side_len / 2.0};
 constexpr ParamValue c_y_default {2.2};
 constexpr int32		 c_y_step {0};			// continuous 
 constexpr int32		 c_y_flags {ParameterInfo::kNoFlags};
 
 // c_z: center of the sphere [m]
-constexpr ParamValue c_z_min {0.0};
+constexpr ParamValue c_z_min {min_dist};
 constexpr ParamValue c_z_max {max_side_len / 2.0};
 constexpr ParamValue c_z_default {0.8};
 constexpr int32		 c_z_step {0};			// continuous 
@@ -243,14 +243,15 @@ struct GUI_param {
 	int32 hrir;				// HRIR selector
 	int32 output;			// output selector
 	int32 bypass;			// byass flag
-	// flags
+	// flags and miscs
 	bool first_frame;		// the first frame after dsp_reset()
-	bool zerone;			// for parameters feedback of HVLines 
 	bool param_changed;		// GUI and host facing parameters are updated (real-time parameters only)
 	bool r_theta_changed;	// r and/or theta are updated
 	bool phi_changed;		// phi is updated
 	bool xypad_changed;		// xy Pad is updated
 	bool yzpad_changed;		// yz Pad is updated
+	bool room_changed;		// r_XX and/or c_XX are updated
+	int32 fb_counter;		// for parameters feedback of HVLines 
 
 	GUI_param () {
 		s_x = s_x_default;
@@ -275,12 +276,30 @@ struct GUI_param {
 		output = 0;
 		bypass = bypass_default;
 		first_frame = true;
-		zerone = true;
 		param_changed = false;
 		r_theta_changed = false;
 		phi_changed = false;
 		xypad_changed = false;
 		yzpad_changed = false;
+		room_changed = false;
+		fb_counter = 0;
+	}
+
+	// for parameters feedback of HVLines 
+	const int32 fb_counter_init {3};
+	const int32 fb_counter_reaper {30};
+
+	void room_update ()
+	{
+		room_changed = true;
+		if (fb_counter < fb_counter_init)
+			fb_counter = fb_counter_init;
+	}
+
+	void initial_room_update ()
+	{
+		room_changed = true;
+		fb_counter = fb_counter_reaper;
 	}
 };
 
