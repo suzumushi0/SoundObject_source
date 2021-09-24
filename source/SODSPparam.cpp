@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-9-22		SODSPparam.cpp
+// 2021-9-24		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -34,7 +34,7 @@ double SODSPparam:: norm_to_taper (double norm)
 
 double SODSPparam:: taper_to_norm (double taper)
 {
-	float ret = log (abs (taper) * 80.0 * 2.0 / max_side_len + 1.0) / log (81.0);
+	double ret = log (abs (taper) * 80.0 * 2.0 / max_side_len + 1.0) / log (81.0);
 	if (taper < 0.0)
 		ret = - ret;
 	return ((1.0 - ret) / 2.0);
