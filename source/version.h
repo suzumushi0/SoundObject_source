@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-9-24		version.h
+// 2021-9-25		version.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -22,8 +22,8 @@
 #define RELEASE_NUMBER_STR "1"
 #define RELEASE_NUMBER_INT 1
 
-#define BUILD_NUMBER_STR "2" // Build number to be sure that each result could be identified.
-#define BUILD_NUMBER_INT 2
+#define BUILD_NUMBER_STR "3" // Build number to be sure that each result could be identified.
+#define BUILD_NUMBER_INT 3
 
 // Version with build number (example "1.0.3.342")
 #define FULL_VERSION_STR MAJOR_VERSION_STR "." SUB_VERSION_STR "." RELEASE_NUMBER_STR "." BUILD_NUMBER_STR

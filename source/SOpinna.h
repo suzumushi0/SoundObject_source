@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-15		SOpinna.h
+// 2021-9-25		SOpinna.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -202,34 +202,34 @@ void SOpinna_scattering <TYPE>:: setup (const TYPE theta_p, const int HRIR)
 	else // AACHEN_KEMAR
 		angular_resolution = angular_resolution_3;
 
-	int angle = theta_p * 180.0 / angular_resolution / pi + 0.5;
-	if (angle <= -180 / angular_resolution)
-		angle = 180 / angular_resolution;
+	int angle = theta_p * 180.0 / pi + 0.5;
+	if (angle <= -180)
+		angle = 180;
 
 	// smoothing
 	if (first_frame) {
 		first_frame = false;
 	} else {
 		int diff = angle - prev_angle;
-		if (abs (diff) > 180 / angular_resolution) {
+		if (abs (diff) > 180) {
 			if (diff > 0)
-				diff -= 360 / angular_resolution;
+				diff -= 360;
 			else
-				diff += 360 / angular_resolution;
+				diff += 360;
 		}
-		if (abs (diff) > angular_resolution_15 / angular_resolution) {
+		if (abs (diff) > angular_resolution_15) {
 			if (diff > 0) {
-				angle = prev_angle + angular_resolution_15 / angular_resolution;
-				if (angle > 180 / angular_resolution)
-					angle -= 360 / angular_resolution;
+				angle = prev_angle + angular_resolution_15;
+				if (angle > 180)
+					angle -= 360;
 			} else {
-				angle = prev_angle - angular_resolution_15 / angular_resolution;
-				if (angle <= -180 /angular_resolution)
-					angle += 360 / angular_resolution;
+				angle = prev_angle - angular_resolution_15;
+				if (angle <= -180)
+					angle += 360;
 			}
 		}
 	}
-	IR = IR_TBL [HRIR] + (180 / angular_resolution - angle) * IR_LEN;
+	IR = IR_TBL [HRIR] + ((180 - angle) / angular_resolution) * IR_LEN;
 	prev_angle = angle;
 }
 
