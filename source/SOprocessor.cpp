@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-9-23		SOprocessor.cpp
+// 2021-11-1		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -223,6 +223,8 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 	
 	//--- Here you have to implement your processing
 
+	gp_update ();					// for setState ()
+
 	// numInputs == 0 and data.numOutputs == 0 mean parameters update only
 	if (data.numInputs == 0 || data.numOutputs == 0) {
 		return kResultOk;
@@ -371,53 +373,86 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 	IBStreamer streamer (state, kLittleEndian);
 	
 	// suzumushi:
-	if (streamer.readDouble (gp.s_x) == false)
+	if (streamer.readDouble (next_gp.s_x) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.s_y) == false)
+	if (streamer.readDouble (next_gp.s_y) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.s_z) == false)
+	if (streamer.readDouble (next_gp.s_z) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.r) == false)
+	if (streamer.readDouble (next_gp.r) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.theta) == false)
+	if (streamer.readDouble (next_gp.theta) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.phi) == false)
+	if (streamer.readDouble (next_gp.phi) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.xypad) == false)
+	if (streamer.readDouble (next_gp.xypad) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.yzpad) == false)
+	if (streamer.readDouble (next_gp.yzpad) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.reflectance) == false)
+	if (streamer.readDouble (next_gp.reflectance) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (gp.fc) == false)
-		return (kResultFalse);
-
-	if (streamer.readDouble (gp.c) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (gp.a) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (gp.r_x) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (gp.r_y) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (gp.r_z) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (gp.c_x) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (gp.c_y) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (gp.c_z) == false)
+	if (streamer.readDouble (next_gp.fc) == false)
 		return (kResultFalse);
 
-	if (streamer.readInt32 (gp.hrir) == false)
+	if (streamer.readDouble (next_gp.c) == false)
 		return (kResultFalse);
-	if (streamer.readInt32 (gp.output) == false)
+	if (streamer.readDouble (next_gp.a) == false)
 		return (kResultFalse);
-	if (streamer.readInt32 (gp.bypass) == false)
+	if (streamer.readDouble (next_gp.r_x) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (next_gp.r_y) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (next_gp.r_z) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (next_gp.c_x) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (next_gp.c_y) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (next_gp.c_z) == false)
 		return (kResultFalse);
 
-	dsp_reset ();
+	if (streamer.readInt32 (next_gp.hrir) == false)
+		return (kResultFalse);
+	if (streamer.readInt32 (next_gp.output) == false)
+		return (kResultFalse);
+	if (streamer.readInt32 (next_gp.bypass) == false)
+		return (kResultFalse);
+
+	next_gp.param_changed = true;
+
 	return (kResultOk);
+}
+
+void SoundObjectProcessor:: gp_update ()
+{
+	if (next_gp.param_changed) {
+		gp.s_x = next_gp.s_x;
+		gp.s_y = next_gp.s_y;
+		gp.s_z = next_gp.s_z;
+		gp.r = next_gp.r;
+		gp.theta = next_gp.theta;
+		gp.phi = next_gp.phi;
+		gp.xypad = next_gp.xypad;
+		gp.yzpad = next_gp.yzpad;
+		gp.reflectance = next_gp.reflectance;
+		gp.fc = next_gp.fc;
+
+		gp.c = next_gp.c;
+		gp.a = next_gp.a;
+		gp.r_x = next_gp.r_x;
+		gp.r_y = next_gp.r_y;
+		gp.r_z = next_gp.r_z;
+		gp.c_x = next_gp.c_x;
+		gp.c_y = next_gp.c_y;
+		gp.c_z = next_gp.c_z;
+
+		gp.hrir = next_gp.hrir;
+		gp.output = next_gp.output;
+		gp.bypass = next_gp.bypass;
+
+		next_gp.param_changed = false;
+		dsp_reset ();
+	}
 }
 
 //------------------------------------------------------------------------
@@ -480,7 +515,6 @@ tresult PLUGIN_API SoundObjectProcessor:: getState (IBStream* state)
 // DSP reset
 void SoundObjectProcessor:: dsp_reset ()
 {
-	gp.first_frame = true;
 	up_down_sampling_dL.reset ();
 	up_down_sampling_dR.reset ();
 	sphere_scattering_dL.reset ();
@@ -497,6 +531,7 @@ void SoundObjectProcessor:: dsp_reset ()
 	}
 	LPF_L.reset ();
 	LPF_R.reset ();
+	gp.first_frame = true;
 }
 
 //------------------------------------------------------------------------

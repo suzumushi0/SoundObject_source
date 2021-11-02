@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-8-8		SOprocessor.h
+// 2021-11-1		SOprocessor.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -70,6 +70,7 @@ private:
 	// suzumush: 
 	// GUI and host facing parameters
 	struct GUI_param gp;
+	struct GUI_param next_gp;	// for setState ()
 
 	// DSP facing parameters
 	SODSPparam dp; 
@@ -91,6 +92,7 @@ private:
 	SOLPF <double> LPF_R;
 
 	// internal functions and status
+	void gp_update ();						// for setState ()
 	void dsp_reset ();	 	
 	int unprocessed_len {0};				// unprocessed frame length
 };
