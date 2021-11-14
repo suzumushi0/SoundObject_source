@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-11-1		version.h
+// 2021-11-14		version.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -19,8 +19,8 @@
 #define SUB_VERSION_STR "3"
 #define SUB_VERSION_INT 3
 
-#define RELEASE_NUMBER_STR "1"
-#define RELEASE_NUMBER_INT 1
+#define RELEASE_NUMBER_STR "2"
+#define RELEASE_NUMBER_INT 2
 
 #define BUILD_NUMBER_STR "1" // Build number to be sure that each result could be identified.
 #define BUILD_NUMBER_INT 1

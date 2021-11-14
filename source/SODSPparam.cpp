@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-9-24		SODSPparam.cpp
+// 2021-11-14		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -189,7 +189,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		double r_2 = s_x_2 + pow (s_y, 2.0) + s_z_2;
 		double r = sqrt (r_2);
 		double r_cos_theta_o = s_y;											// bcause cos_theta_o = s_y / r
-		double next_cos_theta_o = (r == 0.0 ? 1.0: (r_cos_theta_o / r));
+		double next_cos_theta_o = (r == 0.0 ? 0.0: (r_cos_theta_o / r));
 		double theta_o {0.0};
 		double theta_d {0.0};
 		if (r > a) {
