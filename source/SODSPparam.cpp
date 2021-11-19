@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-11-14		SODSPparam.cpp
+// 2021-11-16		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -177,8 +177,10 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		// update of direct wave parameters
 		double s_x_2 = pow (s_x, 2.0);
 		double s_z_2 = pow (s_z, 2.0);
+		double r_2 = s_x_2 + pow (s_y, 2.0) + s_z_2;
+		double r = sqrt (r_2);
 		double med_r = sqrt (s_x_2 + s_z_2);
-		if (med_r != 0.0) {
+		if (r > a && med_r != 0.0) {
 			theta_p = acos (s_x / med_r);
 			if (s_z < 0.0)
 				theta_p = - theta_p;			
@@ -186,10 +188,8 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			theta_p = 0.0;
 		}
 
-		double r_2 = s_x_2 + pow (s_y, 2.0) + s_z_2;
-		double r = sqrt (r_2);
 		double r_cos_theta_o = s_y;											// bcause cos_theta_o = s_y / r
-		double next_cos_theta_o = (r == 0.0 ? 0.0: (r_cos_theta_o / r));
+		double next_cos_theta_o = (a >= r ? 0.0: (r_cos_theta_o / r));
 		double theta_o {0.0};
 		double theta_d {0.0};
 		if (r > a) {
