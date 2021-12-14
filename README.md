@@ -66,7 +66,7 @@ Name: SoundObject
 
 Type: Audio Effect
 
-Use VST GUI: Check
+Use VST GUI: チェック
 
 C++ Class Name: SoundObject
 
