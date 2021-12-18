@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14.0)
 
-set(vst3sdk_SOURCE_DIR D:/VST/VST_SDK/VST3SDK)
+set(vst3sdk_SOURCE_DIR D:/VST/VST_SDK/vst3sdk)
 if(NOT vst3sdk_SOURCE_DIR)
     message(FATAL_ERROR "Path to VST3 SDK is empty!")
 endif()
@@ -16,7 +16,7 @@ set(SMTG_VSTGUI_ROOT "${vst3sdk_SOURCE_DIR}")
 add_subdirectory(${vst3sdk_SOURCE_DIR} ${PROJECT_BINARY_DIR}/vst3sdk)
 smtg_enable_vst3_sdk()
 
-smtg_add_vst3plugin(SoundObject     
+smtg_add_vst3plugin(SoundObject
     source/Aachen_KEMAR/IR_TBL_L_44.h
     source/Aachen_KEMAR/IR_TBL_R_44.h
     source/Aachen_KEMAR/IR_TBL_L_48.h
@@ -68,13 +68,18 @@ if(SMTG_ADD_VSTGUI)
         PRIVATE
             vstgui_support
     )
-    smtg_add_vst3_resource(SoundObject "resource/SOeditor.uidesc")
-endif()
+    smtg_target_add_plugin_resources(SoundObject
+        RESOURCES
+            "resource/SOeditor.uidesc"
+    )
+endif(SMTG_ADD_VSTGUI)
 # -------------------
 
-smtg_add_vst3_snapshot(SoundObject resource/46570030EE935D3495AAEFCF49F7F2CF_snapshot.png)
-smtg_add_vst3_snapshot(SoundObject resource/46570030EE935D3495AAEFCF49F7F2CF_snapshot_2.0x.png)
-
+smtg_target_add_plugin_snapshots (SoundObject
+    RESOURCES
+        resource/46570030EE935D3495AAEFCF49F7F2CF_snapshot.png
+        resource/46570030EE935D3495AAEFCF49F7F2CF_snapshot_2.0x.png
+)
 
 target_link_libraries(SoundObject
     PRIVATE
@@ -83,11 +88,11 @@ target_link_libraries(SoundObject
 
 if(SMTG_MAC)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
-    smtg_set_bundle(SoundObject
-		BUNDLE_IDENTIFIER foo
-		INFOPLIST "${CMAKE_CURRENT_LIST_DIR}/resource/Info.plist" PREPROCESS
+    smtg_target_set_bundle(SoundObject
+        BUNDLE_IDENTIFIER foobar
+        INFOPLIST "${CMAKE_CURRENT_LIST_DIR}/resource/Info.plist" PREPROCESS
     )
-    smtg_set_debug_executable(SoundObject
+    smtg_target_set_debug_executable(SoundObject
         "/Applications/VST3PluginTestHost.app"
         "--pluginfolder;$(BUILT_PRODUCTS_DIR)"
     )
@@ -97,10 +102,10 @@ elseif(SMTG_WIN)
     )
     if(MSVC)
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT SoundObject)
-    
-        smtg_set_debug_executable(SoundObject
+
+        smtg_target_set_debug_executable(SoundObject
             "$(ProgramW6432)/Steinberg/VST3PluginTestHost/VST3PluginTestHost.exe"
             "--pluginfolder \"$(OutDir)/\""
         )
     endif()
-endif()
+endif(SMTG_MAC)
