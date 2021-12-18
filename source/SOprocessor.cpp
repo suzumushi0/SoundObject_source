@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-11-1		SOprocessor.cpp
+// 2021-12-18		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -373,6 +373,9 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 	IBStreamer streamer (state, kLittleEndian);
 	
 	// suzumushi:
+	if (next_gp.param_changed == true)
+		return (kResultFalse);
+
 	if (streamer.readDouble (next_gp.s_x) == false)
 		return (kResultFalse);
 	if (streamer.readDouble (next_gp.s_y) == false)
