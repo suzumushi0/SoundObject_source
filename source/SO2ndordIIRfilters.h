@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-8-15		SO2ndordIIRfilters.h
+// 2022-1-4		SO2ndordIIRfilters.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -60,6 +60,7 @@ class SOsphere_scattering: public SO2ndordIIRfilter <TYPE> {
 public:
 	void setup (const TYPE cT, const TYPE a);
 	TYPE process (const TYPE xn, const TYPE cos_thetao);
+	void process (const TYPE xn, const TYPE sin_phiL, TYPE& para, TYPE& cross);
 };
 
 template <typename TYPE>
@@ -85,5 +86,15 @@ inline TYPE SOsphere_scattering <TYPE>:: process (const TYPE xn, const TYPE cos_
 {
 	return (xn + SO2ndordIIRfilter <TYPE>:: process (xn) * cos_thetao);
 }
+
+template <typename TYPE>
+void SOsphere_scattering <TYPE>:: process (const TYPE xn, const TYPE sin_phiL, TYPE& para, TYPE& cross)
+
+{
+	TYPE scatter = SO2ndordIIRfilter <TYPE>:: process (xn) * sin_phiL;
+	para = (3.0 * xn - scatter) / 4.0;
+	cross = (scatter - xn) / 4.0;
+}
+
 
 }	// namespace suzumushi

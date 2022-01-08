@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-11-16		SODSPparam.cpp
+// 2021-12-31		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -267,6 +267,8 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			// level limiter
 			v_next_decay [i] = ref / std::max (v_dist [i], min_dist);
 		}
+		// update of parameter for crosstalk canceller 
+		sin_phiL = sin (gp.phiL / 180.0 * pi);
 
 		// update of smoothing parameters
 		if (gp.first_frame) {

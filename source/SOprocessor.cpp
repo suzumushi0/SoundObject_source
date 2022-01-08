@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-12-18		SOprocessor.cpp
+// 2022-1-1		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -215,6 +215,16 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 							if (! gp.bypass)				// return from bypass
 								dsp_reset();
 							break;
+						case FORMAT:
+							gp.format = static_cast <int32> (value * (FORMAT_LIST_LEN - 1) + 0.5);
+							break;
+						case PHIL:
+							update = value * (phiL_max - phiL_min) + phiL_min;
+							if (gp.phiL != update) {
+								gp.phiL = update;
+								gp.param_changed = true;
+							}
+							break;
 					}
 				}
 			}
@@ -249,6 +259,8 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			pinna_scattering_rL [i].setSR (SR, L_CH);
 			pinna_scattering_rR [i].setSR (SR, R_CH);
 		}
+		xtalk_canceller_L.setup (1.0 / dp.inv_cT, dp.a);
+		xtalk_canceller_R.setup (1.0 / dp.inv_cT, dp.a);
 	}
 
 	Vst::Sample32* in = data.inputs[0].channelBuffers32[0];
@@ -300,6 +312,7 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			double d_out_L = pinna_scattering_dL.process (d_sc_L);
 			double d_out_R = pinna_scattering_dR.process (d_sc_R);
 			double r_out_L = 0.0, r_out_R = 0.0;
+			double b_out_L = 0.0, b_out_R = 0.0;
 			for (int i = 0; i < 6; i++) {
 				double r_ud_L, r_ud_R;
 				if (data.inputs[0].silenceFlags == 0) {
@@ -319,25 +332,36 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			in++;
 			switch (gp.output) {
 				case COMBINED_WAVES:
-					*out_L++ = d_out_L + r_out_L;
-					*out_R++ = d_out_R + r_out_R;
+					b_out_L = d_out_L + r_out_L;
+					b_out_R = d_out_R + r_out_R;
 					break;
 				case DIRECT_WAVE:
-					*out_L++ = d_out_L;
-					*out_R++ = d_out_R;
+					b_out_L = d_out_L;
+					b_out_R = d_out_R;
 					break;
 				case REFLECTED_WAVES:
-					*out_L++ = r_out_L;
-					*out_R++ = r_out_R;
+					b_out_L = r_out_L;
+					b_out_R = r_out_R;
 					break;
 				case SCATTERED_WAVE:
-					*out_L++ = d_sc_L;
-					*out_R++ = d_sc_R;
+					b_out_L = d_sc_L;
+					b_out_R = d_sc_R;
 					break;
 				case INCIDENT_WAVE:
-					*out_L++ = d_ud_L;
-					*out_R++ = d_ud_R;
+					b_out_L = d_ud_L;
+					b_out_R = d_ud_R;
 					break;
+			}
+
+			double para_L, para_R, cross_L, cross_R;
+			xtalk_canceller_L.process (b_out_L, dp.sin_phiL, para_L, cross_L);
+			xtalk_canceller_R.process (b_out_R, dp.sin_phiL, para_R, cross_R);
+			if (gp.format == BINAURAL) {
+				*out_L++ = b_out_L;
+				*out_R++ = b_out_R;
+			} else {	// TRANSAURAL
+				*out_L++ = para_L + cross_R;
+				*out_R++ = para_R + cross_L;
 			}
 			unprocessed_len--;
 		}
@@ -421,6 +445,12 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 	if (streamer.readInt32 (next_gp.bypass) == false)
 		return (kResultFalse);
 
+	// for backward compatibility 
+	if (streamer.readInt32 (next_gp.format) == false)
+		next_gp.format = BINAURAL;
+	if (streamer.readDouble (next_gp.phiL) == false)
+		next_gp.phiL = phiL_default;
+
 	next_gp.param_changed = true;
 
 	return (kResultOk);
@@ -439,6 +469,7 @@ void SoundObjectProcessor:: gp_update ()
 		gp.yzpad = next_gp.yzpad;
 		gp.reflectance = next_gp.reflectance;
 		gp.fc = next_gp.fc;
+		gp.phiL = next_gp.phiL;
 
 		gp.c = next_gp.c;
 		gp.a = next_gp.a;
@@ -451,6 +482,7 @@ void SoundObjectProcessor:: gp_update ()
 
 		gp.hrir = next_gp.hrir;
 		gp.output = next_gp.output;
+		gp.format = next_gp.format;
 		gp.bypass = next_gp.bypass;
 
 		next_gp.param_changed = false;
@@ -509,6 +541,11 @@ tresult PLUGIN_API SoundObjectProcessor:: getState (IBStream* state)
 		return (kResultFalse);
 	if (streamer.writeInt32 (gp.bypass) == false)
 		return (kResultFalse);
+	if (streamer.writeInt32 (gp.format) == false)
+		return (kResultFalse);
+
+	if (streamer.writeDouble (gp.phiL) == false)
+		return (kResultFalse);
 
 	return (kResultOk);
 }
@@ -534,6 +571,9 @@ void SoundObjectProcessor:: dsp_reset ()
 	}
 	LPF_L.reset ();
 	LPF_R.reset ();
+	xtalk_canceller_L.reset ();
+	xtalk_canceller_R.reset ();
+
 	gp.first_frame = true;
 }
 

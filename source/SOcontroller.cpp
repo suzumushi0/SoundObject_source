@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-9-21		SOcontroller.cpp
+// 2021-1-2		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -68,14 +68,14 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 	Vst::RangeParameter* theta_param = new Vst::RangeParameter (
 		STR16 ("Elevation angle"), THETA, STR16 ("deg."),
 		theta_min, theta_max, theta_default, theta_step, theta_flags);
-	theta_param -> setPrecision (precision2);
+	theta_param -> setPrecision (precision1);
 	parameters.addParameter (theta_param);
 
 	// phi: azimuth angle to the acoustic source [deg (0..360)]
 	Vst::RangeParameter* phi_param = new Vst::RangeParameter (
 		STR16 ("Azimuth angle"), PHI, STR16 ("deg."),
 		phi_min, phi_max, phi_default, phi_step, phi_flags);
-	phi_param -> setPrecision (precision2);
+	phi_param -> setPrecision (precision1);
 	parameters.addParameter (phi_param);
 
 	// xypad:: xy Pad
@@ -103,6 +103,13 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 		fc_min, fc_max, fc_default, fc_step, fc_flags);
 	fc_param -> setPrecision (precision1);
 	parameters.addParameter (fc_param);
+
+	// phiL: azimuth angle to left speaker [deg (0..90)]	
+	Vst::RangeParameter* phiL_param = new Vst::RangeParameter (
+		STR16 ("Azimuth to left speaker"), PHIL, STR16 ("deg."),
+		phiL_min, phiL_max, phiL_default, phiL_step, phiL_flags);
+	phiL_param -> setPrecision (precision1);
+	parameters.addParameter (phiL_param);
 
 
 	// c: acoustic speed [m/s]
@@ -179,6 +186,13 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 	output_param -> appendString (STR16 ("Scattered wave by sphere"));
 	output_param -> appendString (STR16 ("Incident wave /w ITD and ILD"));
 	parameters.addParameter (output_param);
+
+	// fomat: output format selector
+	Vst::StringListParameter* format_param = new Vst::StringListParameter (
+		STR16 ("Format"), FORMAT, nullptr, format_flags);
+	format_param -> appendString (STR16 ("Binaural (Headphones)"));
+	format_param -> appendString (STR16 ("Transaural (Speakers)"));
+	parameters.addParameter (format_param);
 
 	// byass: bypass flag
 	Vst::RangeParameter* bypass_param = new Vst::RangeParameter (
@@ -307,6 +321,17 @@ tresult PLUGIN_API SoundObjectController:: setComponentState (IBStream* state)
 	if (streamer.readInt32 (itmp) == false)
 		return (kResultFalse);
 	setParamNormalized (BYPASS, plainParamToNormalized (BYPASS, static_cast <ParamValue> (itmp)));
+
+	// for backward compatibility 
+	if (streamer.readInt32 (itmp) == true)
+		setParamNormalized (FORMAT, plainParamToNormalized (FORMAT, static_cast <ParamValue> (itmp)));
+	else
+		setParamNormalized (FORMAT, plainParamToNormalized (FORMAT, static_cast <ParamValue> (BINAURAL)));
+
+	if (streamer.readDouble (dtmp) == true)
+		setParamNormalized (PHIL, plainParamToNormalized (PHIL, dtmp));
+	else
+		setParamNormalized (PHIL, plainParamToNormalized (PHIL, phiL_default));
 
 	return (kResultOk);
 }

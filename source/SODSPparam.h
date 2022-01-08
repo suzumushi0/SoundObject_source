@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-9-21		SODSPparam.h
+// 2021-12-31		SODSPparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -46,6 +46,8 @@ public:
 	valarray <double> v_distance_L {valarray <double> (1.0, 6)};
 	valarray <double> v_distance_R {valarray <double> (1.0, 6)};
 	valarray <double> v_decay {valarray <double> (1.0, 6)};
+	// real-time parameter for crosstalk canceller
+	double sin_phiL {1.0};
 
 	// non real-time parameters
 	double inv_cT {44'100.0 / c_default};	// 1 / (cT) T: sampling interval

@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021 suzumushi
 //
-// 2021-11-1		SOprocessor.h
+// 2021-12-31		SOprocessor.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -90,6 +90,8 @@ private:
 	SOpinna_scattering <double> pinna_scattering_rR [6];
 	SOLPF <double> LPF_L;
 	SOLPF <double> LPF_R;
+	SOsphere_scattering <double> xtalk_canceller_L;
+	SOsphere_scattering <double> xtalk_canceller_R;
 
 	// internal functions and status
 	void gp_update ();						// for setState ()

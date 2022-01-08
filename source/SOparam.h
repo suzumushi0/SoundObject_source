@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-9-23		SOparam.h
+// 2022-1-1		SOparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -94,6 +94,13 @@ constexpr ParamValue fc_default {fc_max};
 constexpr int32		 fc_step {0};	// continuous 
 constexpr int32		 fc_flags {ParameterInfo::kCanAutomate};
 
+// phiL: azimuth angle to left speaker [deg (0..90)]	
+constexpr ParamValue phiL_min {0.0};
+constexpr ParamValue phiL_max {90.0};	
+constexpr ParamValue phiL_default {30.0};
+constexpr int32		 phiL_step {0};			// continuous 
+constexpr int32		 phiL_flags {ParameterInfo::kNoFlags};
+
 // c: acoustic speed [m/s]
 constexpr ParamValue c_min {300.0};
 constexpr ParamValue c_max {400.0};
@@ -177,6 +184,14 @@ enum {
 	OUTPUT_LIST_LEN
 };
 
+// fomat: output format selector
+constexpr int32		format_flags {ParameterInfo::kIsList};
+enum {
+	BINAURAL,
+	TRANSAURAL,
+	FORMAT_LIST_LEN
+};
+
 // byass: bypass flag
 constexpr ParamValue bypass_min {0.0};		// false
 constexpr ParamValue bypass_max {1.0};		// true
@@ -211,6 +226,9 @@ enum {
 	HRIR,					// HRIR selector
 	OUTPUT,					// output selector
 	BYPASS,					// bypass flag
+	FORMAT,					// output format
+	// real-time parameters
+	PHIL,					// azimuth angle to left speaker [deg (0..90)]						
 	// Horizontal and vertical lines for XYPAD and YZPAD
 	HV_XY,					// xy Pad
 	HV_YZ					// yz Pad
@@ -230,6 +248,7 @@ struct GUI_param {
 	ParamValue yzpad;		//   yz Pad
 	ParamValue reflectance;	// reflectance [dB]
 	ParamValue fc;			// LPF cut-off frequency [KHz]
+	ParamValue phiL;		// azimuth angle to left speaker [deg (0..90)]	
 	// non real-time parameters
 	ParamValue c;			// acoustic speed [m/s]
 	ParamValue a;			// radius of the sphere [mm]
@@ -242,6 +261,7 @@ struct GUI_param {
 	// control parameters
 	int32 hrir;				// HRIR selector
 	int32 output;			// output selector
+	int32 format;			// output format
 	int32 bypass;			// byass flag
 	// flags and miscs
 	bool first_frame;		// the first frame after dsp_reset()
@@ -264,6 +284,7 @@ struct GUI_param {
 		yzpad = yzpad_default;
 		reflectance = reflectance_default;
 		fc = fc_default;
+		phiL = phiL_default;
 		c = c_default;
 		a = a_default;
 		r_x = r_x_default;
@@ -272,8 +293,9 @@ struct GUI_param {
 		c_x = c_x_default;
 		c_y = c_y_default;
 		c_z = c_z_default;
-		hrir = 0;
-		output = 0;
+		hrir = YORK_KU100;
+		output = COMBINED_WAVES;
+		format = BINAURAL;
 		bypass = bypass_default;
 		first_frame = true;
 		param_changed = false;
