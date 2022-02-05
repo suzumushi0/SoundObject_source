@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-12-31		SODSPparam.h
+// 2022-12-20		SODSPparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -19,8 +19,12 @@ using namespace Vst;
 
 #include <valarray>
 using std::valarray;
+#ifdef _MSC_VER			// Visual C++
 #include <numbers>
 using std::numbers::pi;
+#else	// __clang__	// XCode C++
+constexpr double pi {3.141'592'653'589'793'116};
+#endif
 
 
 namespace suzumushi {

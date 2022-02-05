@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-8-8		SOextparam.h
+// 2022-1-17		SOextparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -14,6 +14,7 @@
 // Extended parameters 
 //
 
+#include <cmath>
 #include "public.sdk/source/vst/vsteditcontroller.h"
 
 namespace Steinberg{
@@ -54,7 +55,7 @@ protected:
 
 inline ParamValue LogTaperParameter:: to_plain (ParamValue normalized, ParamValue min_param, ParamValue max_param)
 {
-	return ((pow (81.0, normalized) - 1.0) / 80.0 * (max_param - min_param) + min_param);
+	return ((std::pow (81.0, normalized) - 1.0) / 80.0 * (max_param - min_param) + min_param);
 }
 
 

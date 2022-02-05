@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-8-8		SOextparam.cpp
+// 2022-1-19		SOextparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -47,7 +47,7 @@ ParamValue LogTaperParameter:: toPlain (ParamValue valueNormalized) const
 
 ParamValue LogTaperParameter:: toNormalized (ParamValue plainValue) const
 {
-	return (log ((plainValue - minPlain) / (maxPlain - minPlain) * 80.0 + 1.0) / log (81.0));
+	return (std::log ((plainValue - minPlain) / (maxPlain - minPlain) * 80.0 + 1.0) / std::log (81.0));
 }
 
 
@@ -62,9 +62,9 @@ void InfParameter:: toString (ParamValue valueNormalized, String128 string) cons
 {
 	UString wrapper (string, str16BufferSize (String128));
 	if (min_Inf && valueNormalized == 0.0)
-		wrapper.assign (L"-Åá");
+		wrapper.assign ((char16 *) u"-\x221E");
 	else if (max_Inf && valueNormalized == 1.0)
-		wrapper.assign (L"Åá");
+		wrapper.assign ((char16 *) u"\x221E");
 	else if (! wrapper.printFloat (toPlain (valueNormalized), precision))
 		string[0] = 0;
 }
@@ -79,7 +79,7 @@ void InfLogTaperParameter:: toString (ParamValue valueNormalized, String128 stri
 {
 	UString wrapper (string, str16BufferSize (String128));
 	if (valueNormalized == 1.0)
-		wrapper.assign (L"Åá");
+		wrapper.assign ((char16 *) u"\x221E");			// U+221E: Infinity
 	else if (! wrapper.printFloat (toPlain (valueNormalized), precision))
 		string[0] = 0;
 }

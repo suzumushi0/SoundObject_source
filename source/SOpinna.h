@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2022 suzumushi
 //
-// 2021-10-21		SOpinna.h
+// 2022-1-20		SOpinna.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -11,8 +11,10 @@
 #pragma once
 
 #include "SODDL.h"
+#ifdef _MSC_VER			// Visual C++
 #include <numbers>
 using std::numbers::pi;
+#endif
 
 
 namespace suzumushi {
