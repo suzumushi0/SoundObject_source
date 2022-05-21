@@ -5,7 +5,10 @@ if(NOT vst3sdk_SOURCE_DIR)
     message(FATAL_ERROR "Path to VST3 SDK is empty!")
 endif()
 
-project(SoundObject)
+project(SoundObject
+    VERSION 2.0.1.2 
+    DESCRIPTION "SoundObject"
+)
 
 # suzumushi
 unset(SMTG_CREATE_PLUGIN_LINK)
@@ -86,11 +89,13 @@ target_link_libraries(SoundObject
         sdk
 )
 
+smtg_target_configure_version_file(SoundObject)
+
 if(SMTG_MAC)
     set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
     smtg_target_set_bundle(SoundObject
         BUNDLE_IDENTIFIER foobar
-        INFOPLIST "${CMAKE_CURRENT_LIST_DIR}/resource/Info.plist" PREPROCESS
+        COMPANY_NAME "suzumushi"
     )
     smtg_target_set_debug_executable(SoundObject
         "/Applications/VST3PluginTestHost.app"
