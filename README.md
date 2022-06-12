@@ -8,11 +8,11 @@
 
 **(1) You will need the following tools.**
 
-Visual Studio 2019.
+Visual Studio 2022.
 
 VST SDK.
 
-https://developer.steinberg.help/display/VST/How+to+set+up+my+system+for+VST+3
+https://steinbergmedia.github.io/vst3_dev_portal/pages/Getting+Started/How+to+setup+my+system.html
 
 **(2) Create a VST3 project template using VST3 SDK Project Generator with the following parameters.**
 
@@ -54,11 +54,11 @@ Select C++ latest from the property.
 
 **(1) 以下のツールが必要です．**
 
-Visual Studio 2019.
+Visual Studio 2022.
 
 VST SDK.
 
-https://developer.steinberg.help/display/VST/How+to+set+up+my+system+for+VST+3
+https://steinbergmedia.github.io/vst3_dev_portal/pages/Getting+Started/How+to+setup+my+system.html
 
 **(2) VST3 SDK Project Generator により以下のパラメータで VST3 プロジェクトテンプレートを生成する．**
 
