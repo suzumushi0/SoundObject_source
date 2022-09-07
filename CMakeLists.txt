@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.14.0)
+set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12 CACHE STRING "")
 
 set(vst3sdk_SOURCE_DIR D:/VST/VST_SDK/vst3sdk)
 if(NOT vst3sdk_SOURCE_DIR)
@@ -9,7 +10,7 @@ project(SoundObject
     # This is your plug-in version number. Change it here only.
     # Version number symbols usable in C++ can be found in
     # source/version.h and ${PROJECT_BINARY_DIR}/projectversion.h.
-    VERSION 2.0.1.2 
+    VERSION 2.0.1.3 
     DESCRIPTION "SoundObject"
 )
 
@@ -95,7 +96,6 @@ target_link_libraries(SoundObject
 smtg_target_configure_version_file(SoundObject)
 
 if(SMTG_MAC)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET 10.12)
     smtg_target_set_bundle(SoundObject
         BUNDLE_IDENTIFIER foobar
         COMPANY_NAME "suzumushi"
