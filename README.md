@@ -30,7 +30,7 @@ Filename Prefix: SO
 
 Output Directory: as you like
 
-CMake Generator: Visual Studio 16 2019
+CMake Generator: Visual Studio 17 2022
 
 **(3) Setup files.**
 
@@ -76,7 +76,7 @@ Filename Prefix: SO
 
 Output Directory: お好きにどうぞ
 
-CMake Generator: Visual Studio 16 2019
+CMake Generator: Visual Studio 17 2022
 
 **(3) ファイルのセットアップ．**
 
