@@ -10,7 +10,7 @@ project(SoundObject
     # This is your plug-in version number. Change it here only.
     # Version number symbols usable in C++ can be found in
     # source/version.h and ${PROJECT_BINARY_DIR}/projectversion.h.
-    VERSION 2.0.1.4 
+    VERSION 2.1.0.0 
     DESCRIPTION "SoundObject"
 )
 
@@ -69,7 +69,7 @@ smtg_add_vst3plugin(SoundObject
 if(SMTG_ADD_VSTGUI)
     target_sources(SoundObject
         PRIVATE
-            resource/SOeditor.uidesc
+            resource/SoundObject.uidesc
     )
     target_link_libraries(SoundObject
         PRIVATE
@@ -77,7 +77,7 @@ if(SMTG_ADD_VSTGUI)
     )
     smtg_target_add_plugin_resources(SoundObject
         RESOURCES
-            "resource/SOeditor.uidesc"
+            "resource/SoundObject.uidesc"
     )
 endif(SMTG_ADD_VSTGUI)
 # -------------------
