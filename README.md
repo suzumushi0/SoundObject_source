@@ -40,9 +40,7 @@ add `.h and .cpp files` to the Visual Studio project.
 
 update vst3sdk_SOURCE_DIR absolute path in `CMakeList.txt`.
 
-update absolute path in `resource\SOeditor.uidesc`.
-
-update relative paths for png file in `resource\SoundObject.uidesc` to absolute paths.
+update absolute path in `resource\SoundObject.uidesc`.
 
 **(4) Setup property.**
 
@@ -86,9 +84,7 @@ Visual Studio のプロジェクトに `.h と.cpp ファイル`を加える．
 
 `CMakeList.txt` の中の絶対パス vst3sdk_SOURCE_DIR を更新．
 
-`resource\SOeditor.uidesc` の中の絶対パスを更新．
-
-`resource\SoundObject.uidesc` の中の png ファイルへの相対パスを絶対パスに更新．
+`resource\SoundObject.uidesc` の中の絶対パスを更新．
 
 **(4) プロパティの設定．**
 
