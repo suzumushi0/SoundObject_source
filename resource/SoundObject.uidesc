@@ -3,22 +3,22 @@
 		"version": "1",
 		"bitmaps": {
 			"about": {
-				"path": "about.png"
+				"path": "D:\\VST\\SoundObject\\resource\\about.png"
 			},
 			"handle": {
-				"path": "handle.png"
+				"path": "D:\\VST\\SoundObject\\resource\\handle.png"
 			},
 			"line": {
-				"path": "line.png"
+				"path": "D:\\VST\\SoundObject\\resource\\line.png"
 			},
 			"slider": {
-				"path": "slider.png"
+				"path": "D:\\VST\\SoundObject\\resource\\slider.png"
 			},
 			"xypad": {
-				"path": "xypad.png"
+				"path": "D:\\VST\\SoundObject\\resource\\xypad.png"
 			},
 			"yzpad": {
-				"path": "yzpad.png"
+				"path": "D:\\VST\\SoundObject\\resource\\yzpad.png"
 			}
 		},
 		"fonts": {
