@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2021-12-31		SOprocessor.h
+// 2023-4-13		SOprocessor.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -67,10 +67,10 @@ public:
 
 //------------------------------------------------------------------------
 private:
-	// suzumush: 
+	// suzumushi: 
 	// GUI and host facing parameters
 	struct GUI_param gp;
-	struct GUI_param next_gp;	// for setState ()
+	struct GUI_param gp_load;						// for setState ()
 
 	// DSP facing parameters
 	SODSPparam dp; 
@@ -88,14 +88,15 @@ private:
 	SOsphere_scattering <double> sphere_scattering_rR [6];
 	SOpinna_scattering <double> pinna_scattering_rL [6];
 	SOpinna_scattering <double> pinna_scattering_rR [6];
-	SOLPF <double> LPF_L;
-	SOLPF <double> LPF_R;
+	SOSLPF <double> LPF_L;
+	SOSLPF <double> LPF_R;
 	SOsphere_scattering <double> xtalk_canceller_L;
 	SOsphere_scattering <double> xtalk_canceller_R;
 
 	// internal functions and status
-	void gp_update ();						// for setState ()
-	void dsp_reset ();	 	
+	void gui_param_loading ();				// for setState ()
+	void gui_param_update (const ParamID paramID, const ParamValue paramValue);
+	void reset ();	 	
 	int unprocessed_len {0};				// unprocessed frame length
 };
 

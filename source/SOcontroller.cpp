@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2021-1-2		SOcontroller.cpp
+// 2023-4-15		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -38,140 +38,140 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 
 	// s_x: position of the acoustic source [m]
 	Vst::RangeParameter* s_x_param = new Vst::RangeParameter (
-		STR16 ("Acoustic source: x"), S_X, STR16 ("m"),
-		s_x_min, s_x_max, s_x_default, s_x_step, s_x_flags);
+		STR16 ("Acoustic source: x"), s_x.tag, STR16 ("m"),
+		s_x.min, s_x.max, s_x.def, s_x.steps, s_x.flags);
 	s_x_param -> setPrecision (precision2);
 	parameters.addParameter (s_x_param);
 
 	// s_y: position of the acoustic source [m]
 	Vst::RangeParameter* s_y_param = new Vst::RangeParameter (
-		STR16 ("Acoustic source: y"), S_Y, STR16 ("m"),
-		s_y_min, s_y_max, s_y_default, s_y_step, s_y_flags);
+		STR16 ("Acoustic source: y"), s_y.tag, STR16 ("m"),
+		s_y.min, s_y.max, s_y.def, s_y.steps, s_y.flags);
 	s_y_param -> setPrecision (precision2);
 	parameters.addParameter (s_y_param);
 
 	// s_z: position of the acoustic source [m]
 	Vst::RangeParameter* s_z_param = new Vst::RangeParameter (
-		STR16 ("Acoustic source: z"), S_Z, STR16 ("m"),
-		s_z_min, s_z_max, s_z_default, s_z_step, s_z_flags);
+		STR16 ("Acoustic source: z"), s_z.tag, STR16 ("m"),
+		s_z.min, s_z.max, s_z.def, s_z.steps, s_z.flags);
 	s_z_param -> setPrecision (precision2);
 	parameters.addParameter (s_z_param);
 
 	// r: radial distance to the acoustic source [m]
 	Vst::RangeParameter* r_param = new Vst::RangeParameter (
-		STR16 ("Radial distance"), R, STR16 ("m"),
-		r_min, r_max, r_default, r_step, r_flags);
+		STR16 ("Radial distance"), r.tag, STR16 ("m"),
+		r.min, r.max, r.def, r.steps, r.flags);
 	r_param -> setPrecision (precision2);
 	parameters.addParameter (r_param);
 
 	// theta: elevation to the acoustic source [deg (-90..90)] (AES69-2020 based definition)
 	Vst::RangeParameter* theta_param = new Vst::RangeParameter (
-		STR16 ("Elevation angle"), THETA, STR16 ("deg."),
-		theta_min, theta_max, theta_default, theta_step, theta_flags);
+		STR16 ("Elevation angle"), theta.tag, STR16 ("deg."),
+		theta.min, theta.max, theta.def, theta.steps, theta.flags);
 	theta_param -> setPrecision (precision1);
 	parameters.addParameter (theta_param);
 
 	// phi: azimuth angle to the acoustic source [deg (0..360)]
 	Vst::RangeParameter* phi_param = new Vst::RangeParameter (
-		STR16 ("Azimuth angle"), PHI, STR16 ("deg."),
-		phi_min, phi_max, phi_default, phi_step, phi_flags);
+		STR16 ("Azimuth angle"), phi.tag, STR16 ("deg."),
+		phi.min, phi.max, phi.def, phi.steps, phi.flags);
 	phi_param -> setPrecision (precision1);
 	parameters.addParameter (phi_param);
 
 	// xypad:: xy Pad
 	Vst::RangeParameter* xypad_param = new Vst::RangeParameter (
-		STR16 ("xy Pad"), XYPAD, nullptr,
-		xypad_min, xypad_max, xypad_default, xypad_step, xypad_flags);
+		STR16 ("xy Pad"), xypad.tag, nullptr,
+		xypad.min, xypad.max, xypad.def, xypad.steps, xypad.flags);
 	parameters.addParameter (xypad_param);
 
 	// yzpad:: yz Pad
 	Vst::RangeParameter* yzpad_param = new Vst::RangeParameter (
-		STR16 ("yz Pad"), YZPAD, nullptr,
-		yzpad_min, yzpad_max, yzpad_default, yzpad_step, yzpad_flags);
+		STR16 ("yz Pad"), yzpad.tag, nullptr,
+		yzpad.min, yzpad.max, yzpad.def, yzpad.steps, yzpad.flags);
 	parameters.addParameter (yzpad_param);
 
 	// reflectance
 	Vst::RangeParameter* reflectance_param = new Vst::RangeParameter (
-		STR16 ("Reflectance"), REFLECTANCE, STR16 ("dB"),
-		reflectance_min, reflectance_max, reflectance_default, reflectance_step, reflectance_flags);
+		STR16 ("Reflectance"), reflectance.tag, STR16 ("dB"),
+		reflectance.min, reflectance.max, reflectance.def, reflectance.steps, reflectance.flags);
 	reflectance_param -> setPrecision (precision1);
 	parameters.addParameter (reflectance_param);
 
 	// fc: LPF cut-off frequency [KHz]
 	Vst::InfLogTaperParameter* fc_param = new Vst::InfLogTaperParameter (
-		STR16 ("Cut-off frequency"), FC, STR16 ("KHz"),
-		fc_min, fc_max, fc_default, fc_step, fc_flags);
+		STR16 ("Cut-off frequency"), fc.tag, STR16 ("KHz"),
+		fc.min, fc.max, fc.def, fc.steps, fc.flags);
 	fc_param -> setPrecision (precision1);
 	parameters.addParameter (fc_param);
 
 	// phiL: azimuth angle to left speaker [deg (0..90)]	
 	Vst::RangeParameter* phiL_param = new Vst::RangeParameter (
-		STR16 ("Azimuth to left speaker"), PHIL, STR16 ("deg."),
-		phiL_min, phiL_max, phiL_default, phiL_step, phiL_flags);
+		STR16 ("Azimuth to left speaker"), phiL.tag, STR16 ("deg."),
+		phiL.min, phiL.max, phiL.def, phiL.steps, phiL.flags);
 	phiL_param -> setPrecision (precision1);
 	parameters.addParameter (phiL_param);
 
 
 	// c: acoustic speed [m/s]
 	Vst::RangeParameter* c_param = new Vst::RangeParameter (
-		STR16 ("Acoustic speed"), C, STR16 ("m/s"),
-		c_min, c_max, c_default, c_step, c_flags);
+		STR16 ("Acoustic speed"), c.tag, STR16 ("m/s"),
+		c.min, c.max, c.def, c.steps, c.flags);
 	c_param -> setPrecision (precision1);
 	parameters.addParameter (c_param);
 
 	// a: radius of the sphere [mm]
 	Vst::RangeParameter* a_param = new Vst::RangeParameter (
-		STR16 ("Radius of sphere"), A, STR16 ("mm"),
-		a_min, a_max, a_default, a_step, a_flags);
+		STR16 ("Radius of sphere"), a.tag, STR16 ("mm"),
+		a.min, a.max, a.def, a.steps, a.flags);
 	a_param -> setPrecision (precision1);
 	parameters.addParameter (a_param);
 
 	// r_x: dimensions of the reverberation room, depth [m]
 	Vst::RangeParameter* r_x_param = new Vst::RangeParameter (
-		STR16 ("Room depth"), R_X, STR16 ("m"),
-		r_x_min, r_x_max, r_x_default, r_x_step, r_x_flags);
+		STR16 ("Room depth"), r_x.tag, STR16 ("m"),
+		r_x.min, r_x.max, r_x.def, r_x.steps, r_x.flags);
 	r_x_param -> setPrecision (precision2);
 	parameters.addParameter (r_x_param);
 
 	// r_y: dimensions of the reverberation room, width [m]
 	Vst::RangeParameter* r_y_param = new Vst::RangeParameter (
-		STR16 ("Room width"), R_Y, STR16 ("m"),
-		r_y_min, r_y_max, r_y_default, r_y_step, r_y_flags);
+		STR16 ("Room width"), r_y.tag, STR16 ("m"),
+		r_y.min, r_y.max, r_y.def, r_y.steps, r_y.flags);
 	r_y_param -> setPrecision (precision2);
 	parameters.addParameter (r_y_param);
 
 	// r_z: dimensions of the reverberation room, height [m]
 	Vst::RangeParameter* r_z_param = new Vst::RangeParameter (
-		STR16 ("Room height"), R_Z, STR16 ("m"),
-		r_z_min, r_z_max, r_z_default, r_z_step, r_z_flags);
+		STR16 ("Room height"), r_z.tag, STR16 ("m"),
+		r_z.min, r_z.max, r_z.def, r_z.steps, r_z.flags);
 	r_z_param -> setPrecision (precision2);
 	parameters.addParameter (r_z_param);
 
 	// c_x: center of the sphere [m]
 	Vst::RangeParameter* c_x_param = new Vst::RangeParameter (
-		STR16 ("Center of sphere: x"), C_X, STR16 ("m"),
-		c_x_min, c_x_max, c_x_default, c_x_step, c_x_flags);
+		STR16 ("Center of sphere: x"), c_x.tag, STR16 ("m"),
+		c_x.min, c_x.max, c_x.def, c_x.steps, c_x.flags);
 	c_x_param -> setPrecision (precision2);
 	parameters.addParameter (c_x_param);
 
 	// c_y: center of the sphere [m]
 	Vst::RangeParameter* c_y_param = new Vst::RangeParameter (
-		STR16 ("Center of sphere: y"), C_Y, STR16 ("m"),
-		c_y_min, c_y_max, c_y_default, c_y_step, c_y_flags);
+		STR16 ("Center of sphere: y"), c_y.tag, STR16 ("m"),
+		c_y.min, c_y.max, c_y.def, c_y.steps, c_y.flags);
 	c_y_param -> setPrecision (precision2);
 	parameters.addParameter (c_y_param);
 
 	// c_z: center of the sphere [m]
 	Vst::RangeParameter* c_z_param = new Vst::RangeParameter (
-		STR16 ("Center of sphere: z"), C_Z, STR16 ("m"),
-		c_z_min, c_z_max, c_z_default, c_z_step, c_z_flags);
+		STR16 ("Center of sphere: z"), c_z.tag, STR16 ("m"),
+		c_z.min, c_z.max, c_z.def, c_z.steps, c_z.flags);
 	c_z_param -> setPrecision (precision2);
 	parameters.addParameter (c_z_param);
 
 
 	// hrir: HRIR selector
 	Vst::StringListParameter* hrir_param = new Vst::StringListParameter (
-		STR16 ("HRIR"), HRIR, nullptr, hrir_flags);
+		STR16 ("HRIR"), hrir.tag, nullptr, hrir.flags);
 	hrir_param -> appendString (STR16 ("Univ. of York, SADIE II KU 100 HRIR"));
 	hrir_param -> appendString (STR16 ("Univ. of York, SADIE II KEMAR HRIR"));
 	hrir_param -> appendString (STR16 ("Aachen Univ., High-resolution KEMAR HRIR"));
@@ -179,7 +179,7 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 
 	// output: output selector
 	Vst::StringListParameter* output_param = new Vst::StringListParameter (
-		STR16 ("Output"), OUTPUT, nullptr, output_flags);
+		STR16 ("Output"), output.tag, nullptr, output.flags);
 	output_param -> appendString (STR16 ("Combined waves"));
 	output_param -> appendString (STR16 ("Direct wave"));
 	output_param -> appendString (STR16 ("Reflected waves"));
@@ -187,29 +187,29 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 	output_param -> appendString (STR16 ("Incident wave /w ITD and ILD"));
 	parameters.addParameter (output_param);
 
-	// fomat: output format selector
+	// format: output format selector
 	Vst::StringListParameter* format_param = new Vst::StringListParameter (
-		STR16 ("Format"), FORMAT, nullptr, format_flags);
+		STR16 ("Format"), format.tag, nullptr, format.flags);
 	format_param -> appendString (STR16 ("Binaural (Headphones)"));
 	format_param -> appendString (STR16 ("Transaural (Speakers)"));
 	parameters.addParameter (format_param);
 
-	// byass: bypass flag
+	// bypass: bypass flag
 	Vst::RangeParameter* bypass_param = new Vst::RangeParameter (
-		STR16 ("Bypass"), BYPASS, nullptr,
-		bypass_min, bypass_max, bypass_default, bypass_step, bypass_flags);
+		STR16 ("Bypass"), bypass.tag, nullptr,
+		bypass.min, bypass.max, bypass.def, bypass.steps, bypass.flags);
 	parameters.addParameter (bypass_param);
 
 	// hv_xy: HVLines for xy Pad
 	Vst::RangeParameter* hvxy_param = new Vst::RangeParameter (
 		STR16 ("HVLines_xy"), HV_XY, nullptr,
-		hv_min, hv_max, hv_default, hv_step, hv_flags);
+		hv.min, hv.max, hv.def, hv.steps, hv.flags);
 	parameters.addParameter (hvxy_param);
 
 	// hv_yz: HVLines for yz Pad
 	Vst::RangeParameter* hvyz_param = new Vst::RangeParameter (
 		STR16 ("HVLines_yz"), HV_YZ, nullptr,
-		hv_min, hv_max, hv_default, hv_step, hv_flags);
+		hv.min, hv.max, hv.def, hv.steps, hv.flags);
 	parameters.addParameter (hvyz_param);
 
 	return (result);
@@ -238,100 +238,100 @@ tresult PLUGIN_API SoundObjectController:: setComponentState (IBStream* state)
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (S_X, plainParamToNormalized (S_X, dtmp));
+	setParamNormalized (s_x.tag, plainParamToNormalized (s_x.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (S_Y, plainParamToNormalized (S_Y, dtmp));
+	setParamNormalized (s_y.tag, plainParamToNormalized (s_y.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (S_Z, plainParamToNormalized (S_Z, dtmp));
+	setParamNormalized (s_z.tag, plainParamToNormalized (s_z.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (R, plainParamToNormalized (R, dtmp));
+	setParamNormalized (r.tag, plainParamToNormalized (r.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (THETA, plainParamToNormalized (THETA, dtmp));
+	setParamNormalized (theta.tag, plainParamToNormalized (theta.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (PHI, plainParamToNormalized (PHI, dtmp));
+	setParamNormalized (phi.tag, plainParamToNormalized (phi.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (XYPAD, plainParamToNormalized (XYPAD, dtmp));
+	setParamNormalized (xypad.tag, plainParamToNormalized (xypad.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (YZPAD, plainParamToNormalized (YZPAD, dtmp));
+	setParamNormalized (yzpad.tag, plainParamToNormalized (yzpad.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (REFLECTANCE, plainParamToNormalized (REFLECTANCE, dtmp));
+	setParamNormalized (reflectance.tag, plainParamToNormalized (reflectance.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (FC, plainParamToNormalized (FC, dtmp));
+	setParamNormalized (fc.tag, plainParamToNormalized (fc.tag, dtmp));
 
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (C, plainParamToNormalized (C, dtmp));
+	setParamNormalized (c.tag, plainParamToNormalized (c.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (A, plainParamToNormalized (A, dtmp));
+	setParamNormalized (a.tag, plainParamToNormalized (a.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (R_X, plainParamToNormalized (R_X, dtmp));
+	setParamNormalized (r_x.tag, plainParamToNormalized (r_x.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (R_Y, plainParamToNormalized (R_Y, dtmp));
+	setParamNormalized (r_y.tag, plainParamToNormalized (r_y.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (R_Z, plainParamToNormalized (R_Z, dtmp));
+	setParamNormalized (r_z.tag, plainParamToNormalized (r_z.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (C_X, plainParamToNormalized (C_X, dtmp));
+	setParamNormalized (c_x.tag, plainParamToNormalized (c_x.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (C_Y, plainParamToNormalized (C_Y, dtmp));
+	setParamNormalized (c_y.tag, plainParamToNormalized (c_y.tag, dtmp));
 
 	if (streamer.readDouble (dtmp) == false)
 		return (kResultFalse);
-	setParamNormalized (C_Z, plainParamToNormalized (C_Z, dtmp));
+	setParamNormalized (c_z.tag, plainParamToNormalized (c_z.tag, dtmp));
 
 
 	if (streamer.readInt32 (itmp) == false)
 		return (kResultFalse);
-	setParamNormalized (HRIR, plainParamToNormalized (HRIR, static_cast <ParamValue> (itmp)));
+	setParamNormalized (hrir.tag, plainParamToNormalized (hrir.tag, static_cast <ParamValue> (itmp)));
 
 	if (streamer.readInt32 (itmp) == false)
 		return (kResultFalse);
-	setParamNormalized (OUTPUT, plainParamToNormalized (OUTPUT, static_cast <ParamValue> (itmp)));
+	setParamNormalized (output.tag, plainParamToNormalized (output.tag, static_cast <ParamValue> (itmp)));
 
 	if (streamer.readInt32 (itmp) == false)
 		return (kResultFalse);
-	setParamNormalized (BYPASS, plainParamToNormalized (BYPASS, static_cast <ParamValue> (itmp)));
+	setParamNormalized (bypass.tag, plainParamToNormalized (bypass.tag, static_cast <ParamValue> (itmp)));
 
 	// for backward compatibility 
 	if (streamer.readInt32 (itmp) == true)
-		setParamNormalized (FORMAT, plainParamToNormalized (FORMAT, static_cast <ParamValue> (itmp)));
+		setParamNormalized (format.tag, plainParamToNormalized (format.tag, static_cast <ParamValue> (itmp)));
 	else
-		setParamNormalized (FORMAT, plainParamToNormalized (FORMAT, static_cast <ParamValue> (BINAURAL)));
+		setParamNormalized (format.tag, plainParamToNormalized (format.tag, static_cast <ParamValue> ((int32) FORMAT_L:: BINAURAL)));
 
 	if (streamer.readDouble (dtmp) == true)
-		setParamNormalized (PHIL, plainParamToNormalized (PHIL, dtmp));
+		setParamNormalized (phiL.tag, plainParamToNormalized (phiL.tag, dtmp));
 	else
-		setParamNormalized (PHIL, plainParamToNormalized (PHIL, phiL_default));
+		setParamNormalized (phiL.tag, plainParamToNormalized (phiL.tag, phiL.def));
 
 	return (kResultOk);
 }

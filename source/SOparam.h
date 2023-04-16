@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2022-1-1		SOparam.h
+// 2023-4-15		SOparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -16,222 +16,290 @@ using Steinberg::Vst::ParamValue;
 using Steinberg::int32;
 
 #include "SOconfig.h"
+#include "SOextparam.h"
 
 namespace suzumushi {
 
-// GUI and host facing parameters 
-	
-constexpr int32		precision1 {1};		// precision of numerical parameters
-constexpr int32		precision2 {2};		// precision of numerical parameters
+// definition of GUI and host facing parameters tag
+
+// real-time parameters
+constexpr ParamID S_X {0};					// position of the acoustic source,  x [m]
+constexpr ParamID S_Y {1};					//   y [m]
+constexpr ParamID S_Z {2};					//   z [m]
+constexpr ParamID R {3};					//   radius [m]
+constexpr ParamID THETA {4};				//   elevation [deg (-90..90)] (AES69-2020 based definition)
+constexpr ParamID PHI {5};					//   azimuth [deg (0..360)]
+constexpr ParamID XYPAD {6};				//   xy Pad
+constexpr ParamID YZPAD {7};				//   yz Pad
+constexpr ParamID REFLECTANCE {8};			// reflectance [dB]
+constexpr ParamID FC {9};					// LPF cut-off frequency [KHz]
+// non real-time parameters
+constexpr ParamID C {10};					// acoustic speed [m/s]
+constexpr ParamID A {11};					// radius of the sphere [mm]
+constexpr ParamID R_X {12};					// dimensions of the reverberation room, depth [m]
+constexpr ParamID R_Y {13};					//   width [m]
+constexpr ParamID R_Z {14};					//   height [m]
+constexpr ParamID C_X {15};					// center of the sphere, x [m]
+constexpr ParamID C_Y {16};					//   y [m]
+constexpr ParamID C_Z {17};					//   z [m]
+// control parameters
+constexpr ParamID HRIR {18};				// HRIR selector
+constexpr ParamID OUTPUT {19};				// output selector
+constexpr ParamID BYPASS {20};				// bypass flag
+constexpr ParamID FORMAT {21};				// output format
+// real-time parameters
+constexpr ParamID PHIL {22};				// azimuth angle to left speaker [deg (0..90)]						
+// Horizontal and vertical lines for XYPAD and YZPAD
+constexpr ParamID HV_XY {23};				// xy Pad
+constexpr ParamID HV_YZ	{24};				// yz Pad
+
+// attributes of GUI and host facing parameter
 
 // s_x: position of the acoustic source [m]
-constexpr ParamValue s_x_min {- max_side_len / 2.0};
-constexpr ParamValue s_x_max {max_side_len / 2.0};
-constexpr ParamValue s_x_default {1.0};
-constexpr int32		 s_x_step {0};			// continuous 
-constexpr int32		 s_x_flags {ParameterInfo::kCanAutomate};
-
+constexpr struct rangeParameter s_x = {
+	S_X,								// tag
+	{- max_side_len / 2.0},				// min
+	{max_side_len / 2.0},				// max
+	{1.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
+	
 // s_y position of the acoustic source [m]
-constexpr ParamValue s_y_min {- max_side_len / 2.0};
-constexpr ParamValue s_y_max {max_side_len / 2.0};
-constexpr ParamValue s_y_default {0.0};
-constexpr int32		 s_y_step {0};			// continuous 
-constexpr int32		 s_y_flags {ParameterInfo::kCanAutomate};
+constexpr struct rangeParameter s_y = {
+	S_Y,								// tag
+	{- max_side_len / 2.0},				// min
+	{max_side_len / 2.0},				// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
 
 // s_z position of the acoustic source [m]
-constexpr ParamValue s_z_min {- max_side_len / 2.0};
-constexpr ParamValue s_z_max {max_side_len / 2.0};
-constexpr ParamValue s_z_default {0.0};
-constexpr int32		 s_z_step {0};			// continuous 
-constexpr int32		 s_z_flags {ParameterInfo::kCanAutomate};
+constexpr struct rangeParameter s_z = {
+	S_Z,								// tag
+	{- max_side_len / 2.0},				// min
+	{max_side_len / 2.0},				// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
 
 // r: radial distance to the acoustic source [m]
-constexpr ParamValue r_min {0.0};
-constexpr ParamValue r_max {max_side_len};
-constexpr ParamValue r_default {1.0};
-constexpr int32		 r_step {0};			// continuous 
-constexpr int32		 r_flags {ParameterInfo::kCanAutomate};
+constexpr struct rangeParameter r = {
+	R,									// tag
+	{0.0},								// min
+	{max_side_len},						// max
+	{1.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
 
 // theta: elevation angle to the acoustic source [deg (-90..90)] (AES69-2020 based definition)
-constexpr ParamValue theta_min {-90.0};
-constexpr ParamValue theta_max {90.0};
-constexpr ParamValue theta_default {0.0};
-constexpr int32		 theta_step {0};		// continuous 
-constexpr int32		 theta_flags {ParameterInfo::kCanAutomate};
+constexpr struct rangeParameter theta = {
+	THETA,								// tag
+	{-90.0},							// min
+	{90.0},								// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
 
 // phi: azimuth angle to the acoustic source [deg (0..360)]
-constexpr ParamValue phi_min {0.0};
-constexpr ParamValue phi_max {360.0};	
-constexpr ParamValue phi_default {0.0};
-constexpr int32		 phi_step {0};			// continuous 
-constexpr int32		 phi_flags {ParameterInfo::kCanAutomate};
+constexpr struct rangeParameter phi = {
+	PHI,								// tag
+	{0.0},								// min
+	{360.0},							// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
 
-// xyad: position of the xy Pad
-constexpr ParamValue xypad_min {0.0};
-constexpr ParamValue xypad_max {2.0};	
-constexpr ParamValue xypad_default {0.0};
-constexpr int32		 xypad_step {0};		// continuous 
-constexpr int32		 xypad_flags {ParameterInfo::kNoFlags};
+// xypad: position of the xy Pad
+constexpr struct rangeParameter xypad = {
+	XYPAD,								// tag
+	{0.0},								// min
+	{2.0},								// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // yzpad: position of the yz Pad
-constexpr ParamValue yzpad_min {0.0};
-constexpr ParamValue yzpad_max {2.0};	
-constexpr ParamValue yzpad_default {0.0};
-constexpr int32		 yzpad_step {0};		// continuous 
-constexpr int32		 yzpad_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter yzpad = {
+	YZPAD,								// tag
+	{0.0},								// min
+	{2.0},								// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // reflectance [dB]
-constexpr ParamValue reflectance_min {-20.0};
-constexpr ParamValue reflectance_max {20.0};
-constexpr ParamValue reflectance_default {0.0};
-constexpr int32		 reflectance_step {0};	// continuous 
-constexpr int32		 reflectance_flags {ParameterInfo::kCanAutomate};
+constexpr struct rangeParameter reflectance = {
+	REFLECTANCE,						// tag
+	{-20.0},							// min
+	{20.0},								// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
 
 // fc: LPF cut-off frequency [KHz]
-constexpr ParamValue fc_min {0.1};
-constexpr ParamValue fc_max {22.0};
-constexpr ParamValue fc_default {fc_max};
-constexpr int32		 fc_step {0};	// continuous 
-constexpr int32		 fc_flags {ParameterInfo::kCanAutomate};
+constexpr struct infLogTaperParameter fc = {
+	FC,									// tag
+	{0.1},								// min
+	{22.0},								// max
+	{fc.max},							// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
 
 // phiL: azimuth angle to left speaker [deg (0..90)]	
-constexpr ParamValue phiL_min {0.0};
-constexpr ParamValue phiL_max {90.0};	
-constexpr ParamValue phiL_default {30.0};
-constexpr int32		 phiL_step {0};			// continuous 
-constexpr int32		 phiL_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter phiL = {
+	PHIL,								// tag
+	{0.0},								// min
+	{90.0},								// max
+	{30.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // c: acoustic speed [m/s]
-constexpr ParamValue c_min {300.0};
-constexpr ParamValue c_max {400.0};
-constexpr ParamValue c_default {331.5 + 0.61 * 22.0};
-constexpr int32		 c_step {0};			// continuous 
-constexpr int32		 c_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter c = {
+	C,									// tag
+	{300.0},							// min
+	{400.0},							// max
+	{331.5 + 0.61 * 22.0},				// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // a: radius of the sphere [mm]
-constexpr ParamValue a_min {10.0};
-constexpr ParamValue a_max {min_dist / 2.0 * 1'000};
-constexpr ParamValue a_default {143.0 / 2.0};
-constexpr int32		 a_step {0};			// continuous 
-constexpr int32		 a_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter a = {
+	A,									// tag
+	{10.0},								// min
+	{min_dist / 2.0 * 1'000},			// max
+	{143.0 / 2.0},						// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // r_x: dimensions of the reverberation room, depth [m]
-constexpr ParamValue r_x_min {min_dist * 2.0};
-constexpr ParamValue r_x_max {max_side_len};
-constexpr ParamValue r_x_default {2.9};
-constexpr int32		 r_x_step {0};			// continuous 
-constexpr int32		 r_x_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter r_x = {
+	R_X,								// tag
+	{min_dist * 2.0},					// min
+	{max_side_len},						// max
+	{2.9},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // r_y: dimensions of the reverberation room, width [m]
-constexpr ParamValue r_y_min {min_dist * 2.0};
-constexpr ParamValue r_y_max {max_side_len};
-constexpr ParamValue r_y_default {4.1};
-constexpr int32		 r_y_step {0};			// continuous 
-constexpr int32		 r_y_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter r_y = {
+	R_Y,								// tag
+	{min_dist * 2.0},					// min
+	{max_side_len},						// max
+	{4.1},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // r_z: dimensions of the reverberation room height [m]
-constexpr ParamValue r_z_min {min_dist * 2.0};
-constexpr ParamValue r_z_max {max_side_len};
-constexpr ParamValue r_z_default {2.3};
-constexpr int32		 r_z_step {0};			// continuous 
-constexpr int32		 r_z_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter r_z = {
+	R_Z,								// tag
+	{min_dist * 2.0},					// min
+	{max_side_len},						// max
+	{2.3},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // c_x: center of the sphere [m]
-constexpr ParamValue c_x_min {min_dist};
-constexpr ParamValue c_x_max {max_side_len / 2.0};
-constexpr ParamValue c_x_default {1.8};
-constexpr int32		 c_x_step {0};			// continuous 
-constexpr int32		 c_x_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter c_x = {
+	C_X,								// tag
+	{min_dist},							// min
+	{max_side_len / 2.0},				// max
+	{1.8},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // c_y: center of the sphere [m]
-constexpr ParamValue c_y_min {min_dist};
-constexpr ParamValue c_y_max {max_side_len / 2.0};
-constexpr ParamValue c_y_default {2.2};
-constexpr int32		 c_y_step {0};			// continuous 
-constexpr int32		 c_y_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter c_y = {
+	C_Y,								// tag
+	{min_dist},							// min
+	{max_side_len / 2.0},				// max
+	{2.2},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // c_z: center of the sphere [m]
-constexpr ParamValue c_z_min {min_dist};
-constexpr ParamValue c_z_max {max_side_len / 2.0};
-constexpr ParamValue c_z_default {0.8};
-constexpr int32		 c_z_step {0};			// continuous 
-constexpr int32		 c_z_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter c_z = {
+	C_Z,								// tag
+	{min_dist},							// min
+	{max_side_len / 2.0},				// max
+	{0.8},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // Horizontal and vertical lines for XYPAD and YZPAD
-constexpr ParamValue hv_min {0.0};
-constexpr ParamValue hv_max {2.0};
-constexpr ParamValue hv_default {0.0};
-constexpr int32		 hv_step {0};			// continuous 
-constexpr int32		 hv_flags {ParameterInfo::kNoFlags};
+constexpr struct rangeParameter hv = {
+	HV_XY,								// tag
+	{0.0},								// min
+	{2.0},								// max
+	{0.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kNoFlags}			// flags
+};
 
 // hrir: HRIR DB selector
-constexpr int32		hrir_flags {ParameterInfo::kIsList};
-enum {
+constexpr struct stringListParameter hrir = {
+	HRIR,								// tag
+	{ParameterInfo::kIsList}			// flags
+};
+enum class HRIR_L {
 	YORK_KU100,
 	YORK_KEMAR,
 	AACHEN_KEMAR,
-	HRIR_LIST_LEN
+	LIST_LEN
 };
 
 // output: output selector
-constexpr int32		output_flags {ParameterInfo::kIsList};
-enum {
+constexpr struct stringListParameter output = {
+	OUTPUT,								// tag
+	{ParameterInfo::kIsList}			// flags
+};
+enum class OUTPUT_L {
 	COMBINED_WAVES,
 	DIRECT_WAVE,
 	REFLECTED_WAVES,
 	SCATTERED_WAVE,
 	INCIDENT_WAVE,
-	OUTPUT_LIST_LEN
+	LIST_LEN
 };
 
-// fomat: output format selector
-constexpr int32		format_flags {ParameterInfo::kIsList};
-enum {
+// format: output format selector
+constexpr struct stringListParameter format = {
+	FORMAT,								// tag
+	{ParameterInfo::kIsList}			// flags
+};
+enum class FORMAT_L {
 	BINAURAL,
 	TRANSAURAL,
-	FORMAT_LIST_LEN
+	LIST_LEN
 };
 
-// byass: bypass flag
-constexpr ParamValue bypass_min {0.0};		// false
-constexpr ParamValue bypass_max {1.0};		// true
-constexpr ParamValue bypass_default {0.0};
-constexpr int32		 bypass_step {1};		// toggle 
-constexpr int32		 bypass_flags {ParameterInfo::kCanAutomate | ParameterInfo::kIsBypass};
-
-// definition of GUI and host facing parameters tag
-
-enum {
-	// real-time parameters
-	S_X,					// position of the acoustic source,  x [m]
-	S_Y,					//   y [m]
-	S_Z,					//   z [m]
-	R,						//   radius [m]
-	THETA,					//   elevation [deg (-90..90)] (AES69-2020 based definition)
-	PHI,					//   azimuth [deg (0..360)]
-	XYPAD,					//   xy Pad
-	YZPAD,					//   yz Pad
-	REFLECTANCE,			// reflectance [dB]
-	FC,						// LPF cut-off frequency [KHz]
-	// non real-time parameters
-	C,						// acoustic speed [m/s]
-	A,						// radius of the sphere [mm]
-	R_X,					// dimensions of the reverberation room, depth [m]
-	R_Y,					//   width [m]
-	R_Z,					//   height [m]
-	C_X,					// center of the sphere, x [m]
-	C_Y,					//   y [m]
-	C_Z,					//   z [m]
-	// control parameters
-	HRIR,					// HRIR selector
-	OUTPUT,					// output selector
-	BYPASS,					// bypass flag
-	FORMAT,					// output format
-	// real-time parameters
-	PHIL,					// azimuth angle to left speaker [deg (0..90)]						
-	// Horizontal and vertical lines for XYPAD and YZPAD
-	HV_XY,					// xy Pad
-	HV_YZ					// yz Pad
+// bypass: bypass flag
+constexpr struct rangeParameter bypass = {
+	BYPASS,								// tag
+	{0.0},								// min, false
+	{1.0},								// max, true
+	{0.0},								// default
+	{1},								// toggle
+	{ParameterInfo::kCanAutomate | ParameterInfo::kIsBypass}	// flags
 };
 
 //  GUI and host facing parameters in processor class
@@ -262,9 +330,9 @@ struct GUI_param {
 	int32 hrir;				// HRIR selector
 	int32 output;			// output selector
 	int32 format;			// output format
-	int32 bypass;			// byass flag
-	// flags and miscs
-	bool first_frame;		// the first frame after dsp_reset()
+	int32 bypass;			// bypass flag
+	// flags and misc
+	bool reset;				// the first frame after reset()
 	bool param_changed;		// GUI and host facing parameters are updated (real-time parameters only)
 	bool r_theta_changed;	// r and/or theta are updated
 	bool phi_changed;		// phi is updated
@@ -274,30 +342,30 @@ struct GUI_param {
 	int32 fb_counter;		// for parameters feedback of HVLines 
 
 	GUI_param () {
-		s_x = s_x_default;
-		s_y = s_y_default;
-		s_z = s_z_default;
-		r = r_default;
-		theta = theta_default;
-		phi = phi_default;
-		xypad = xypad_default;
-		yzpad = yzpad_default;
-		reflectance = reflectance_default;
-		fc = fc_default;
-		phiL = phiL_default;
-		c = c_default;
-		a = a_default;
-		r_x = r_x_default;
-		r_y = r_y_default;
-		r_z = r_z_default;
-		c_x = c_x_default;
-		c_y = c_y_default;
-		c_z = c_z_default;
-		hrir = YORK_KU100;
-		output = COMBINED_WAVES;
-		format = BINAURAL;
-		bypass = bypass_default;
-		first_frame = true;
+		s_x = suzumushi::s_x.def;
+		s_y = suzumushi::s_y.def;
+		s_z = suzumushi::s_z.def;
+		r = suzumushi::r.def;
+		theta = suzumushi::theta.def;
+		phi = suzumushi::phi.def;
+		xypad = suzumushi::xypad.def;
+		yzpad = suzumushi::yzpad.def;
+		reflectance = suzumushi::reflectance.def;
+		fc = suzumushi::fc.def;
+		phiL = suzumushi::phiL.def;
+		c = suzumushi::c.def;
+		a = suzumushi::a.def;
+		r_x = suzumushi::r_x.def;
+		r_y = suzumushi::r_y.def;
+		r_z = suzumushi::r_z.def;
+		c_x = suzumushi::c_x.def;
+		c_y = suzumushi::c_y.def;
+		c_z = suzumushi::c_z.def;
+		hrir = (int32) HRIR_L:: YORK_KU100;
+		output = (int32) OUTPUT_L:: COMBINED_WAVES;
+		format = (int32) FORMAT_L:: BINAURAL;
+		bypass = suzumushi::bypass.def;
+		reset = true;
 		param_changed = false;
 		r_theta_changed = false;
 		phi_changed = false;

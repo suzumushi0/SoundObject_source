@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2022-1-20		SOpinna.h
+// 2023-4-14		SOpinna.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -43,25 +43,25 @@ struct IR_DATA {
 template <typename TYPE>
 class SOpinna_scattering {
 public:
-	void setSR (const int SR, const bool CH);
+	void setup_SR (const int SR, const bool CH);
 	void setup (const TYPE theta_p, const int HRIR);
 	TYPE process (const TYPE xn);
 	void reset ();
 private:
-	const static IR_DATA <TYPE, 15> Y1_IR;	// IR data set of the KU 100 derived from Unib. of York, SADIE II
+	const static IR_DATA <TYPE, 15> Y1_IR;	// IR data set of the KU 100 derived from Univ. of York, SADIE II
 	const static IR_DATA <TYPE, 15> YK_IR;	// IR data set of the KEMAR derived from Univ. of York, SADIE II
 	const static IR_DATA <TYPE, 3>  AK_IR;	// IR data set of the KEMAR derived from Aachen Univ., High-resolution HRTF
-	const static int angular_resolution [HRIR_LIST_LEN];	// angular resolution table
+	const static int angular_resolution [(int32)HRIR_L::LIST_LEN];	// angular resolution table
 
-	const TYPE* IR_TBL [HRIR_LIST_LEN];		// pointer to IR_TBL
-	TYPE IR [MAX_IR_LEN];					// IR
-	TYPE delta_IR [MAX_IR_LEN];				// for smoothing 
-	int IR_LEN {0};							// IR length
-	SODDL <TYPE, MAX_IR_LEN> IDL;			// input delay line
-	TYPE prev_theta_p {0.0};				// for smoothing
-	int prev_HRIR {0};						// for smoothing
-	bool first_frame {true};				// The first frame after reset() or initialization
-	bool smoothing {false};					// smoothing mode
+	const TYPE* IR_TBL [(int32)HRIR_L::LIST_LEN];	// pointer to IR_TBL
+	TYPE IR [MAX_IR_LEN];							// IR
+	TYPE delta_IR [MAX_IR_LEN];						// for smoothing 
+	int IR_LEN {0};									// IR length
+	SODDL <TYPE, MAX_IR_LEN> IDL;					// input delay line
+	TYPE prev_theta_p {0.0};						// for smoothing
+	int prev_HRIR {0};								// for smoothing
+	bool first_frame {true};						// The first frame after reset() or initialization
+	bool smoothing {false};							// smoothing mode
 };
 
 template <typename TYPE>
@@ -116,46 +116,46 @@ const IR_DATA <TYPE, 3> SOpinna_scattering <TYPE>:: AK_IR {
 };
 
 template <typename TYPE>
-const int SOpinna_scattering <TYPE>:: angular_resolution [HRIR_LIST_LEN] {
+const int SOpinna_scattering <TYPE>:: angular_resolution [(int32)HRIR_L::LIST_LEN] {
 	Y1_IR.angular_resolution,
 	YK_IR.angular_resolution,	
 	AK_IR.angular_resolution
 };
 
 template <typename TYPE>
-void SOpinna_scattering <TYPE>:: setSR (const int SR, const bool CH)
+void SOpinna_scattering <TYPE>:: setup_SR (const int SR, const bool CH)
 {
 	if (SR <= 44'100) {
 		if (CH == L_CH) {
-			IR_TBL [YORK_KU100]	  = &Y1_IR.L_44 [0][0];
-			IR_TBL [YORK_KEMAR]	  = &YK_IR.L_44 [0][0];
-			IR_TBL [AACHEN_KEMAR] = &AK_IR.L_44 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.L_44 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KEMAR]	 = &YK_IR.L_44 [0][0];
+			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.L_44 [0][0];
 		} else {
-			IR_TBL [YORK_KU100]	  = &Y1_IR.R_44 [0][0];
-			IR_TBL [YORK_KEMAR]   = &YK_IR.R_44 [0][0];
-			IR_TBL [AACHEN_KEMAR] = &AK_IR.R_44 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.R_44 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KEMAR]   = &YK_IR.R_44 [0][0];
+			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.R_44 [0][0];
 		}
 		IR_LEN = IR_44_LEN;
 	} else if (SR == 48'000) {
 		if (CH == L_CH) {
-			IR_TBL [YORK_KU100]	  = &Y1_IR.L_48 [0][0];
-			IR_TBL [YORK_KEMAR]	  = &YK_IR.L_48 [0][0];
-			IR_TBL [AACHEN_KEMAR] = &AK_IR.L_48 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.L_48 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KEMAR]	 = &YK_IR.L_48 [0][0];
+			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.L_48 [0][0];
 		} else {
-			IR_TBL [YORK_KU100]	  = &Y1_IR.R_48 [0][0];
-			IR_TBL [YORK_KEMAR]   = &YK_IR.R_48 [0][0];
-			IR_TBL [AACHEN_KEMAR] = &AK_IR.R_48 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.R_48 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KEMAR]   = &YK_IR.R_48 [0][0];
+			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.R_48 [0][0];
 		}
 		IR_LEN = IR_48_LEN;
 	} else {
 		if (CH == L_CH) {
-			IR_TBL [YORK_KU100]	  = &Y1_IR.L_96 [0][0];
-			IR_TBL [YORK_KEMAR]	  = &YK_IR.L_96 [0][0];
-			IR_TBL [AACHEN_KEMAR] = &AK_IR.L_96 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.L_96 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KEMAR]	 = &YK_IR.L_96 [0][0];
+			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.L_96 [0][0];
 		} else {
-			IR_TBL [YORK_KU100]	  = &Y1_IR.R_96 [0][0];
-			IR_TBL [YORK_KEMAR]   = &YK_IR.R_96 [0][0];
-			IR_TBL [AACHEN_KEMAR] = &AK_IR.R_96 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.R_96 [0][0];
+			IR_TBL [(int32)HRIR_L::YORK_KEMAR]   = &YK_IR.R_96 [0][0];
+			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.R_96 [0][0];
 		}
 		IR_LEN = IR_96_LEN;
 	}
@@ -212,7 +212,7 @@ TYPE SOpinna_scattering <TYPE>:: process (const TYPE xn)
 	}
 
 	// convolution
-	IDL.push (xn);
+	IDL.enqueue (xn);
 	TYPE* ir = & IR [0];
 	TYPE sum = 0.0;
 	for (int at = MAX_IR_LEN - 1; at >= MAX_IR_LEN - IR_LEN; at--)	// (at = MAX_IR_LEN -1) holds the latest data. 

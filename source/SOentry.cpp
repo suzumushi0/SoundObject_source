@@ -29,7 +29,7 @@ using namespace suzumushi;
 
 BEGIN_FACTORY_DEF ("suzumushi", 
 			       "https://suzumushi0.hatenablog.com", 
-			       "mailto:suzumushi9@gmai.com")
+			       "mailto:suzumushi9@gmail.com")
 
 	//---First Plug-in included in this factory-------
 	// its kVstAudioEffectClass component

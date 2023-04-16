@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2022-12-20		SODSPparam.h
+// 2023-4-15		SODSPparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -29,7 +29,7 @@ constexpr double pi {3.141'592'653'589'793'116};
 
 namespace suzumushi {
 
-// DSP facing parameters and upate functions
+// DSP facing parameters and update functions
 
 class SODSPparam {
 public:
@@ -54,26 +54,26 @@ public:
 	double sin_phiL {1.0};
 
 	// non real-time parameters
-	double inv_cT {44'100.0 / c_default};	// 1 / (cT) T: sampling interval
-	double a {a_default};					// radius of sphere
+	double inv_cT {44'100.0 / c.def};		// 1 / (cT) T: sampling interval
+	double a_r {a.def};						// radius of sphere
 
 private:
 	// XYPad helper functions
 	ParamValue calculateValue (ParamValue x, ParamValue y);
 	void calculateXY (ParamValue value, ParamValue& x, ParamValue& y);
 
-	// 10% logarithmic taper curve (A curve variable registor in Japan) helper functions for XYPad
+	// 10% logarithmic taper curve (A curve variable resistor in Japan) helper functions for XYPad
 	double norm_to_taper (double norm);
 	double taper_to_norm (double taper);
 
 	// non real-time parameters
-	double a_2 {a_default * a_default};
+	double a_2 {a.def * a.def};
 
 	// parameters for velocity limiter
 	double prev_s_x {0.0};
 	double prev_s_y {0.0};
 	double prev_s_z {0.0};
-	double v_limit {c_default * max_speed * frame_len / 44'100};
+	double v_limit {c.def * max_speed * frame_len / 44'100};
 
 	// per face parameters (real-time)
 	valarray <double> v_X {valarray <double> (6)};

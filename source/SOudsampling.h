@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2022-1-20		SOudsampling.h
+// 2023-4-14		SOudsampling.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -63,7 +63,7 @@ TYPE SOudsampling <TYPE>:: IR_TBL [IR_CENTER + 1];
 template <typename TYPE>
 SOudsampling <TYPE>:: SOudsampling ()
 {
-	if (IR_TBL [0] == 0.0) {
+	if (IR_TBL [IR_CENTER] == 0.0) {
 		// sinc function 
 		for (int i = 0; i < IR_CENTER; i++) {
 			TYPE x = pi * ((TYPE)i - IR_CENTER) / N;
@@ -124,7 +124,7 @@ void SOudsampling <TYPE>:: setup (const TYPE inv_cT, const TYPE distance)
 template <typename TYPE>
 TYPE SOudsampling <TYPE>:: process (const TYPE xn, const TYPE decay)
 {
-	IDL.push (xn);
+	IDL.enqueue (xn);
 	if (M > N) {
 		TYPE sum = 0.0;
 		int idl_at = IR_L - 1;
@@ -156,7 +156,7 @@ TYPE SOudsampling <TYPE>:: process (const TYPE xn, const TYPE decay)
 	} else {		// M == N
 		ODL.add (odl_at, IDL.read ((IR_L - 1) / 2) * decay);
 	}
-	return (ODL.read ());
+	return (ODL.dequeue ());
 }
 
 template <typename TYPE>

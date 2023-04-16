@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2022-1-17		SOextparam.h
+// 2023-3-13		SOextparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -10,6 +10,84 @@
 
 #pragma once
 
+#include <cmath>
+
+#include "public.sdk/source/vst/vsteditcontroller.h"
+using Steinberg::Vst::ParameterInfo;
+using Steinberg::Vst::ParamID;
+using Steinberg::Vst::ParamValue;
+using Steinberg::int32;
+
+
+namespace suzumushi {
+
+// precision of numerical parameters
+
+constexpr int32 precision0 {0};
+constexpr int32 precision1 {1};
+constexpr int32	precision2 {2};
+constexpr int32	precision3 {3};
+
+// templates for parameter definition
+
+struct rangeParameter {
+	ParamID tag;
+	ParamValue min;			// min plain
+	ParamValue max;			// max plain
+	ParamValue def;			// default value plain
+	int32 steps;			// step count
+	int32 flags;
+	// helper functions
+	static ParamValue toPlain (const ParamValue normalized, const ParamValue min, const ParamValue max)
+	{
+		return (normalized * (max - min) + min);
+	}
+	static ParamValue toNormalized (const ParamValue plain, const ParamValue min, const ParamValue max)
+	{
+		return ((plain - min) / (max - min));
+	}
+	static ParamValue dB_to_ratio (const ParamValue dB)
+	{
+		return (std::pow (10.0, dB / 20.0));
+	}
+	static ParamValue ratio_to_dB (const ParamValue ratio)
+	{
+		return (20.0 * std::log10 (ratio));
+	}
+};
+
+struct stringListParameter {
+	ParamID tag;
+	int32 flags;
+	// helper functions
+	static int32 toPlain (const ParamValue normalized, const int32 ListLength)
+	{
+		return ((int32)(normalized * (ListLength - 1) + 0.5));
+	}
+	static ParamValue toNormalized (const int32 plain, const int32 ListLength)
+	{
+		return ((ParamValue)(plain) / (ListLength - 1));
+	}
+};
+
+struct logTaperParameter {
+	ParamID tag;
+	ParamValue min;			// min plain
+	ParamValue max;			// max plain
+	ParamValue def;			// default value plain
+	int32 steps;			// step count
+	int32 flags;
+};
+
+struct infLogTaperParameter: public logTaperParameter {};
+
+struct infParameter: public rangeParameter {
+	bool min_Inf;
+	bool max_inf;
+};
+
+} // namespace suzumushi
+
 //
 // Extended parameters 
 //
@@ -17,10 +95,10 @@
 #include <cmath>
 #include "public.sdk/source/vst/vsteditcontroller.h"
 
-namespace Steinberg{
+namespace Steinberg {
 namespace Vst {
 
-// Paramter for 10% logarithmic taper potentiometer (A curve variable registor in Japan) 
+// Parameter for 10% logarithmic taper potentiometer (A curve variable resistor in Japan) 
 
 class LogTaperParameter: public Parameter
 {
@@ -39,10 +117,18 @@ public:
 	/** Converts a normalized value to plain value. */
 	ParamValue toPlain (ParamValue valueNormalized) const SMTG_OVERRIDE;
 	// helper function
-	static ParamValue to_plain (ParamValue normalized, ParamValue min_param, ParamValue max_param);
+	static ParamValue toPlain (ParamValue normalized, ParamValue minPlain, ParamValue maxPlain)
+	{
+		return ((std::pow (81.0, normalized) - 1.0) / 80.0 * (maxPlain - minPlain) + minPlain);
+	}
 
 	/** Converts a plain value to a normalized value. */
 	ParamValue toNormalized (ParamValue plainValue) const SMTG_OVERRIDE;
+	// helper function
+	static ParamValue toNormalized (ParamValue plainValue, ParamValue minPlain, ParamValue maxPlain)
+	{
+		return (std::log ((plainValue - minPlain) / (maxPlain - minPlain) * 80.0 + 1.0) / std::log (81.0));
+	}
 
 	OBJ_METHODS (LogTaperParameter, Parameter)
 
@@ -53,13 +139,26 @@ protected:
 	ParamValue maxPlain;
 };
 
-inline ParamValue LogTaperParameter:: to_plain (ParamValue normalized, ParamValue min_param, ParamValue max_param)
+
+// LogTaperParameter except that "inf" is displayed at the maximum value
+
+class InfLogTaperParameter: public LogTaperParameter
 {
-	return ((std::pow (81.0, normalized) - 1.0) / 80.0 * (max_param - min_param) + min_param);
-}
+public:
+
+	InfLogTaperParameter (const TChar* title, ParamID tag, const TChar* units = nullptr,
+		ParamValue minPlain = 0.0, ParamValue maxPlain = 1.0, ParamValue defaultValuePlain = 0.0, 
+		int32 stepCount = 0, int32 flags = ParameterInfo::kCanAutomate,
+		UnitID unitID = kRootUnitId, const TChar* shortTitle = nullptr);
+
+	/** Converts a normalized value to a string. */
+	void toString (ParamValue _valueNormalized, String128 string) const SMTG_OVERRIDE;
+
+	OBJ_METHODS (InfLogTaperParameter, LogTaperParameter)
+};
 
 
-// RangeParamter except that "inf" and/or "-inf" are indicated at the maximum and/or minimum values
+// RangeParameter except that "inf" and/or "-inf" are displayed at the maximum and/or minimum values
 
 class InfParameter: public RangeParameter
 {
@@ -78,24 +177,6 @@ public:
 protected:
 	bool min_Inf;
 	bool max_Inf;
-};
-
-
-// LogTaperParameter except that "inf" is indicated at the maximum value
-
-class InfLogTaperParameter: public LogTaperParameter
-{
-public:
-
-	InfLogTaperParameter (const TChar* title, ParamID tag, const TChar* units = nullptr,
-		ParamValue minPlain = 0.0, ParamValue maxPlain = 1.0, ParamValue defaultValuePlain = 0.0, 
-		int32 stepCount = 0, int32 flags = ParameterInfo::kCanAutomate,
-		UnitID unitID = kRootUnitId, const TChar* shortTitle = nullptr);
-
-	/** Converts a normalized value to a string. */
-	void toString (ParamValue _valueNormalized, String128 string) const SMTG_OVERRIDE;
-
-	OBJ_METHODS (InfLogTaperParameter, LogTaperParameter)
 };
 
 

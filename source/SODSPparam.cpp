@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2021-12-31		SODSPparam.cpp
+// 2023-4-15		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -28,13 +28,13 @@ void SODSPparam:: calculateXY (ParamValue value, ParamValue& x, ParamValue& y)
 double SODSPparam:: norm_to_taper (double norm)
 {
 	double coord = 1.0 - 2.0 * norm;
-	double ret = (pow (81.0, abs (coord)) - 1.0) * max_side_len / 2.0 / 80.0;
+	double ret = LogTaperParameter:: toPlain (abs (coord), 0.0, max_side_len / 2.0);
 	return (coord >= 0.0 ? ret : - ret);
 }
 
 double SODSPparam:: taper_to_norm (double taper)
 {
-	double ret = log (abs (taper) * 80.0 * 2.0 / max_side_len + 1.0) / log (81.0);
+	double ret = LogTaperParameter:: toNormalized (abs (taper), 0.0, max_side_len / 2.0);
 	if (taper < 0.0)
 		ret = - ret;
 	return ((1.0 - ret) / 2.0);
@@ -44,24 +44,27 @@ double SODSPparam:: taper_to_norm (double taper)
 void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outParam)
 {
 	// smoothing mode
-	if (! gp.first_frame && gp.param_changed)
+	if (! gp.reset && gp.param_changed)
 		smoothing = true;
 	else
 		smoothing = false;
 
 	// HVLines parameters feedback
-	if (gp.first_frame || gp.room_changed) {
-		if (gp.first_frame)
+	if (gp.reset || gp.room_changed) {
+		if (gp.reset)
 			gp.initial_room_update ();	// for Reaper
 		if (gp.fb_counter == gp.fb_counter_init || gp.fb_counter == 0) {
 			ParamValue hv_xy, hv_yz;
+			double x_axis;
 			if (gp.fb_counter == 0) {
 				gp.param_changed = false;
-				hv_xy = calculateValue (taper_to_norm (- gp.c_y), taper_to_norm (- gp.c_x));
-				hv_yz = calculateValue (taper_to_norm (- gp.c_y), taper_to_norm (- gp.c_z));
+				x_axis = taper_to_norm (- gp.c_y);
+				hv_xy = calculateValue (x_axis, taper_to_norm (- gp.c_x));
+				hv_yz = calculateValue (x_axis, taper_to_norm (- gp.c_z));
 			} else {
-				hv_xy = calculateValue (taper_to_norm (gp.r_y - gp.c_y), taper_to_norm (gp.r_x - gp.c_x));
-				hv_yz = calculateValue (taper_to_norm (gp.r_y - gp.c_y), taper_to_norm (gp.r_z - gp.c_z));
+				x_axis = taper_to_norm (gp.r_y - gp.c_y);
+				hv_xy = calculateValue (x_axis, taper_to_norm (gp.r_x - gp.c_x));
+				hv_yz = calculateValue (x_axis, taper_to_norm (gp.r_z - gp.c_z));
 			}
 			if (outParam) {
 				int32 q_index = 0;		// paramQueue index
@@ -69,17 +72,17 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 				int32 p_offset = 0;		// parameter offset
 				IParamValueQueue* paramQueue = outParam->addParameterData (HV_XY, q_index);
 				if (paramQueue)
-					paramQueue->addPoint (p_offset, (hv_xy - hv_min) / (hv_max - hv_min), p_index);
+					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_xy, hv.min, hv.max), p_index);
 				paramQueue = outParam->addParameterData (HV_YZ, q_index);
 				if (paramQueue)
-					paramQueue->addPoint (p_offset, (hv_yz - hv_min) / (hv_max - hv_min), p_index);
+					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_yz, hv.min, hv.max), p_index);
 			}
 		}
 		gp.fb_counter--;
 	}
 
 	// parameters update
-	if (gp.first_frame || gp.param_changed) {
+	if (gp.reset || gp.param_changed) {
 		gp.param_changed = false;
 
 		// update of the acoustic source position
@@ -87,10 +90,10 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			double theta_rad = gp.theta * pi / 180.0;
 			double phi_rad = gp.phi * pi / 180.0;
 			double r_cos_theta = gp.r * cos (theta_rad);
-			gp.s_x = std::min (std::max (r_cos_theta * cos (phi_rad), s_x_min), s_x_max);
-			gp.s_y = std::min (std::max (r_cos_theta * sin (phi_rad), s_y_min), s_y_max);
+			gp.s_x = std::min (std::max (r_cos_theta * cos (phi_rad), s_x.min), s_x.max);
+			gp.s_y = std::min (std::max (r_cos_theta * sin (phi_rad), s_y.min), s_y.max);
 			if (gp.r_theta_changed)
-				gp.s_z = std::min (std::max (gp.r * sin (theta_rad), s_z_min), s_z_max);
+				gp.s_z = std::min (std::max (gp.r * sin (theta_rad), s_z.min), s_z.max);
 			gp.r_theta_changed = gp.phi_changed = false;
 		}
 		if (gp.yzpad_changed) {
@@ -123,45 +126,46 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			if (gp.s_y < 0.0)
 				gp.phi = 360.0 - gp.phi;
 		}
-		gp.xypad = calculateValue (taper_to_norm (gp.s_y), taper_to_norm (gp.s_x));
-		gp.yzpad = calculateValue (taper_to_norm (gp.s_y), taper_to_norm (gp.s_z));
+		double x_axis = taper_to_norm (gp.s_y);
+		gp.xypad = calculateValue (x_axis, taper_to_norm (gp.s_x));
+		gp.yzpad = calculateValue (x_axis, taper_to_norm (gp.s_z));
 
 		// parameters feedback
 		if (outParam) {
 			int32 q_index = 0;		// paramQueue index
 			int32 p_index = 0;		// parameter index
 			int32 p_offset = 0;		// parameter offset
-			IParamValueQueue* paramQueue = outParam->addParameterData (S_X, q_index);
+			IParamValueQueue* paramQueue = outParam->addParameterData (s_x.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.s_x - s_x_min) / (s_x_max - s_x_min), p_index);
-			paramQueue = outParam->addParameterData (S_Y, q_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_x, s_x.min, s_x.max), p_index);
+			paramQueue = outParam->addParameterData (s_y.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.s_y - s_y_min) / (s_y_max - s_y_min), p_index);
-			paramQueue = outParam->addParameterData (S_Z, q_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_y, s_y.min, s_y.max), p_index);
+			paramQueue = outParam->addParameterData (s_z.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.s_z - s_z_min) / (s_z_max - s_z_min), p_index);
-			paramQueue = outParam->addParameterData (R, q_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_z, s_z.min, s_z.max), p_index);
+			paramQueue = outParam->addParameterData (r.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.r - r_min) / (r_max - r_min), p_index);
-			paramQueue = outParam->addParameterData (THETA, q_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.r, r.min, r.max), p_index);
+			paramQueue = outParam->addParameterData (theta.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.theta - theta_min) / (theta_max - theta_min), p_index);
-			paramQueue = outParam->addParameterData (PHI, q_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.theta, theta.min, theta.max), p_index);
+			paramQueue = outParam->addParameterData (phi.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.phi - phi_min) / (phi_max - phi_min), p_index);
-			paramQueue = outParam->addParameterData (XYPAD, q_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.phi, phi.min, phi.max), p_index);
+			paramQueue = outParam->addParameterData (xypad.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.xypad - xypad_min) / (xypad_max - xypad_min), p_index);
-			paramQueue = outParam->addParameterData (YZPAD, q_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.xypad, xypad.min, xypad.max), p_index);
+			paramQueue = outParam->addParameterData (yzpad.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, (gp.yzpad - yzpad_min) / (yzpad_max - yzpad_min), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.yzpad, yzpad.min, yzpad.max), p_index);
 		}
 
 		// velocity limiter
 		double s_x = gp.s_x;
 		double s_y = gp.s_y;
 		double s_z = gp.s_z;
-		if (! gp.first_frame) {
+		if (! gp.reset) {
 			double v = sqrt (pow (gp.s_x - prev_s_x, 2.0) + pow (gp.s_y - prev_s_y, 2.0) + pow (gp.s_z - prev_s_z, 2.0));
 			if (v > v_limit) {
 				s_x = (gp.s_x - prev_s_x) * v_limit / v + prev_s_x;
@@ -180,7 +184,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		double r_2 = s_x_2 + pow (s_y, 2.0) + s_z_2;
 		double r = sqrt (r_2);
 		double med_r = sqrt (s_x_2 + s_z_2);
-		if (r > a && med_r != 0.0) {
+		if (r > a_r && med_r != 0.0) {
 			theta_p = acos (s_x / med_r);
 			if (s_z < 0.0)
 				theta_p = - theta_p;			
@@ -188,22 +192,22 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			theta_p = 0.0;
 		}
 
-		double r_cos_theta_o = s_y;											// bcause cos_theta_o = s_y / r
-		double next_cos_theta_o = (a >= r ? 0.0: (r_cos_theta_o / r));
+		double r_cos_theta_o = s_y;											// because cos_theta_o = s_y / r
+		double next_cos_theta_o = (a_r >= r ? 0.0: (r_cos_theta_o / r));
 		double theta_o {0.0};
 		double theta_d {0.0};
-		if (r > a) {
+		if (r > a_r) {
 			theta_o = acos (next_cos_theta_o);								// theta_o [0 .. pi]
-			theta_d = acos (a / r);
+			theta_d = acos (a_r / r);
 		}
-		if (a <= r_cos_theta_o || a >= r)
-			distance_L = sqrt (a_2 + r_2 - 2.0 * a * r_cos_theta_o);
+		if (a_r <= r_cos_theta_o || a_r >= r)
+			distance_L = sqrt (a_2 + r_2 - 2.0 * a_r * r_cos_theta_o);
 		else
-			distance_L = sqrt (r_2 - a_2) + a * (theta_o - theta_d);
-		if (a <= - r_cos_theta_o || a >= r)
-			distance_R = sqrt (a_2 + r_2 + 2.0 * a * r_cos_theta_o);
+			distance_L = sqrt (r_2 - a_2) + a_r * (theta_o - theta_d);
+		if (a_r <= - r_cos_theta_o || a_r >= r)
+			distance_R = sqrt (a_2 + r_2 + 2.0 * a_r * r_cos_theta_o);
 		else
-			distance_R = sqrt (r_2 - a_2) + a * (pi - theta_o - theta_d);
+			distance_R = sqrt (r_2 - a_2) + a_r * (pi - theta_o - theta_d);
 
 		// level limiter 
 		double next_decay_L = 1.0 / std::max (distance_L, min_dist);
@@ -212,7 +216,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		// update of reflected waves parameters
 		valarray <double> v_next_cos_theta_o (6);
 		valarray <double> v_next_decay (6);
-		double ref = pow (10.0, gp.reflectance / 20.0);				// from dB to ratio
+		double ref = rangeParameter:: dB_to_ratio (gp.reflectance);
 
 		v_X [0] = v_X [1] = v_X [3] = v_X [5] = s_x;
 		v_Y [0] = v_Y [2] = v_Y [4] = v_Y [5] = s_y;
@@ -258,11 +262,11 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 
 		for (int i = 0; i < 6; i++) {
 			if (v_next_cos_theta_o [i] >= 0.0) {
-				v_distance_L [i] = v_dist [i] - a * v_next_cos_theta_o [i];
-				v_distance_R [i] = v_dist [i] + a * (pi / 2.0 - acos (v_next_cos_theta_o [i]));
+				v_distance_L [i] = v_dist [i] - a_r * v_next_cos_theta_o [i];
+				v_distance_R [i] = v_dist [i] + a_r * (pi / 2.0 - acos (v_next_cos_theta_o [i]));
 			} else {
-				v_distance_L [i] = v_dist [i] + a * (acos (v_next_cos_theta_o [i]) - pi / 2.0);
-				v_distance_R [i] = v_dist [i] + a * v_next_cos_theta_o [i];
+				v_distance_L [i] = v_dist [i] + a_r * (acos (v_next_cos_theta_o [i]) - pi / 2.0);
+				v_distance_R [i] = v_dist [i] + a_r * v_next_cos_theta_o [i];
 			}
 			// level limiter
 			v_next_decay [i] = ref / std::max (v_dist [i], min_dist);
@@ -271,7 +275,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		sin_phiL = sin (gp.phiL / 180.0 * pi);
 
 		// update of smoothing parameters
-		if (gp.first_frame) {
+		if (gp.reset) {
 			cos_theta_o = next_cos_theta_o;
 			decay_L = next_decay_L;
 			decay_R = next_decay_R;
@@ -284,7 +288,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			v_delta_cos_theta_o = (v_next_cos_theta_o - v_cos_theta_o) / frame_len;
 			v_delta_decay = (v_next_decay - v_decay) / frame_len;
 		}
-		gp.first_frame = false;
+		gp.reset = false;
 	}
 }
 
@@ -293,8 +297,8 @@ void SODSPparam:: nrt_param_update (struct GUI_param &gp, IParameterChanges* out
 {
 	inv_cT = sampleRate / gp.c;
 	v_limit = max_speed * frame_len / inv_cT;
-	a = gp.a / 1'000.0;		// [mm] to [m]
-	a_2 = pow (a, 2.0);
+	a_r = gp.a / 1'000.0;		// [mm] to [m]
+	a_2 = pow (a_r, 2.0);
 
 	// parameters range check
 	if (gp.r_x >= max_side_len / 2.0 + min_dist)
@@ -315,15 +319,15 @@ void SODSPparam:: nrt_param_update (struct GUI_param &gp, IParameterChanges* out
 		int32 q_index = 0;		// paramQueue index
 		int32 p_index = 0;		// parameter index
 		int32 p_offset = 0;		// parameter offset
-		IParamValueQueue* paramQueue = outParam->addParameterData (C_X, q_index);
+		IParamValueQueue* paramQueue = outParam->addParameterData (c_x.tag, q_index);
 		if (paramQueue)
-			paramQueue->addPoint (p_offset, (gp.c_x - c_x_min) / (c_x_max - c_x_min), p_index);
-		paramQueue = outParam->addParameterData (C_Y, q_index);
+			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_x, c_x.min, c_x.max), p_index);
+		paramQueue = outParam->addParameterData (c_y.tag, q_index);
 		if (paramQueue)
-			paramQueue->addPoint (p_offset, (gp.c_y - c_y_min) / (c_y_max - c_y_min), p_index);
-		paramQueue = outParam->addParameterData (C_Z, q_index);
+			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_y, c_y.min, c_y.max), p_index);
+		paramQueue = outParam->addParameterData (c_z.tag, q_index);
 		if (paramQueue)
-			paramQueue->addPoint (p_offset, (gp.c_z - c_z_min) / (c_z_max - c_z_min), p_index);
+			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_z, c_z.min, c_z.max), p_index);
 	}
 
 	// update of reflected waves parameters

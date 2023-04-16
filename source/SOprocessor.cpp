@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2022-1-1		SOprocessor.cpp
+// 2023-4-15		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -13,7 +13,6 @@
 
 #include "base/source/fstreamer.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
-
 
 using namespace Steinberg;
 
@@ -67,7 +66,7 @@ tresult PLUGIN_API SoundObjectProcessor:: setActive (TBool state)
 {
 	// suzumushi:
 	if (state != 0)				// if (state == true)
-		dsp_reset();
+		reset ();
 
 	//--- called when the Plug-in is enable/disable (On/Off) -----
 	return AudioEffect::setActive (state);
@@ -83,149 +82,11 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
         for (int32 index = 0; index < numParamsChanged; index++) {
             if (auto* paramQueue = data.inputParameterChanges->getParameterData (index)) {
                 Vst::ParamValue value;
-				Vst::ParamValue update;
                 int32 sampleOffset;
                 int32 numPoints = paramQueue->getPointCount ();
 				// suzumushi: get the last change
 				if (paramQueue->getPoint (numPoints - 1, sampleOffset, value) == kResultTrue) {
-					switch (paramQueue->getParameterId ()) {
-						case S_X:
-							update = value * (s_x_max - s_x_min) + s_x_min;
-							if (gp.s_x != update) {
-								gp.s_x = update;
-								gp.param_changed = true;
-							}
-							break;
-						case S_Y:
-							update = value * (s_y_max - s_y_min) + s_y_min;
-							if (gp.s_y != update) {
-								gp.s_y = update;
-								gp.param_changed = true;
-							}
-							break;
-						case S_Z:
-							update = value * (s_z_max - s_z_min) + s_z_min;
-							if (gp.s_z != update) {
-								gp.s_z = update;
-								gp.param_changed = true;
-							}
-							break;
-						case R:
-							update = value * (r_max - r_min) + r_min;
-							if (gp.r != update) {
-								gp.r = update;
-								gp.param_changed = gp.r_theta_changed = true;
-							}
-							break;
-						case THETA:
-							update = value * (theta_max - theta_min) + theta_min;
-							if (gp.theta != update) {
-								gp.theta = update;
-								gp.param_changed = gp.r_theta_changed = true;
-							}
-							break;
-						case PHI:
-							update = value * (phi_max - phi_min) + phi_min;
-							if (gp.phi != update) {
-								gp.phi = update;
-								gp.param_changed = gp.phi_changed = true;
-							}
-							break;
-						case XYPAD:
-							update = value * (xypad_max - xypad_min) + xypad_min;
-							if (gp.xypad != update) {
-								gp.xypad = update;
-								gp.param_changed = gp.xypad_changed = true;
-							}
-							break;
-						case YZPAD:
-							update = value * (yzpad_max - yzpad_min) + yzpad_min;
-							if (gp.yzpad != update) {
-								gp.yzpad = update;
-								gp.param_changed = gp.yzpad_changed = true;
-							}
-							break;
-						case REFLECTANCE:
-							update = value * (reflectance_max - reflectance_min) + reflectance_min;
-							if (gp.reflectance != update) {
-								gp.reflectance = update;
-								gp.param_changed = true;
-							}
-							break;
-						case FC:
-							gp.fc = InfLogTaperParameter:: to_plain (value, fc_min, fc_max); 
-							break;
-
-						case C:
-							gp.c = value * (c_max - c_min) + c_min;
-							break;
-						case A:
-							gp.a = value * (a_max - a_min) + a_min;
-							break;
-						case R_X:
-							update = value * (r_x_max - r_x_min) + r_x_min;
-							if (gp.r_x != update) {
-								gp.r_x = update;
-								gp.room_update ();
-							}
-							break;
-						case R_Y:
-							update = value * (r_y_max - r_y_min) + r_y_min;
-							if (gp.r_y != update) {
-								gp.r_y = update;
-								gp.room_update ();
-							}
-							break;
-						case R_Z:
-							update = value * (r_z_max - r_z_min) + r_z_min;
-							if (gp.r_z != update) {
-								gp.r_z = update;
-								gp.room_update ();
-							}
-							break;
-						case C_X:
-							update = value * (c_x_max - c_x_min) + c_x_min;
-							if (gp.c_x != update) {
-								gp.c_x = update;
-								gp.room_update ();
-							}
-							break;
-						case C_Y:
-							update = value * (c_y_max - c_y_min) + c_y_min;
-							if (gp.c_y != update) {
-								gp.c_y = update;
-								gp.room_update ();
-							}
-							break;
-						case C_Z:
-							update = value * (c_z_max - c_z_min) + c_z_min;
-							if (gp.c_z != update) {
-								gp.c_z = update;
-								gp.room_update ();
-							}
-							break;
-						case HRIR:
-							gp.hrir = static_cast <int32> (value * (HRIR_LIST_LEN - 1) + 0.5);
-							break;
-						case OUTPUT:
-							gp.output = static_cast <int32> (value * (OUTPUT_LIST_LEN - 1) + 0.5);
-							break;
-						case BYPASS:
-							gp.bypass = static_cast <int32> (value);
-							if (! gp.bypass)				// return from bypass
-								dsp_reset();
-							break;
-						case FORMAT:
-							gp.format = static_cast <int32> (value * (FORMAT_LIST_LEN - 1) + 0.5);
-							break;
-						case PHIL:
-							update = value * (phiL_max - phiL_min) + phiL_min;
-							if (gp.phiL != update) {
-								gp.phiL = update;
-								gp.param_changed = true;
-							}
-							break;
-					}
+					gui_param_update (paramQueue->getParameterId (), value);
 				}
 			}
 		}
@@ -233,7 +94,26 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 	
 	//--- Here you have to implement your processing
 
-	gp_update ();					// for setState ()
+	gui_param_loading ();					// for setState ()
+
+	// The first round of acoustic data processing after reset()
+	if (gp.reset) {		
+		dp.nrt_param_update (gp, data.outputParameterChanges, processSetup.sampleRate);
+		unprocessed_len = 0;
+		sphere_scattering_dL.setup (1.0 / dp.inv_cT, dp.a_r);
+		sphere_scattering_dR.setup (1.0 / dp.inv_cT, dp.a_r);
+		int SR = (processSetup.sampleRate + 0.5);
+		pinna_scattering_dL.setup_SR (SR, L_CH);
+		pinna_scattering_dR.setup_SR (SR, R_CH);
+		for (int i = 0; i < 6; i++) {
+			sphere_scattering_rL [i].setup (1.0 / dp.inv_cT, dp.a_r);
+			sphere_scattering_rR [i].setup (1.0 / dp.inv_cT, dp.a_r);
+			pinna_scattering_rL [i].setup_SR (SR, L_CH);
+			pinna_scattering_rR [i].setup_SR (SR, R_CH);
+		}
+		xtalk_canceller_L.setup (1.0 / dp.inv_cT, dp.a_r);
+		xtalk_canceller_R.setup (1.0 / dp.inv_cT, dp.a_r);
+	}
 
 	// numInputs == 0 and data.numOutputs == 0 mean parameters update only
 	if (data.numInputs == 0 || data.numOutputs == 0) {
@@ -242,25 +122,6 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 	// Speaker arrangements (at least mono in and stereo out are required) check.
 	if (data.inputs[0].numChannels == 0 || data.outputs[0].numChannels <= 1) {
 		return kResultOk;
-	}
-
-	// The first round of acoustic data processing after dsp_reset()
-	if (gp.first_frame) {		
-		dp.nrt_param_update (gp, data.outputParameterChanges, processSetup.sampleRate);
-		unprocessed_len = 0;
-		sphere_scattering_dL.setup (1.0 / dp.inv_cT, dp.a);
-		sphere_scattering_dR.setup (1.0 / dp.inv_cT, dp.a);
-		int SR = (processSetup.sampleRate + 0.5);
-		pinna_scattering_dL.setSR (SR, L_CH);
-		pinna_scattering_dR.setSR (SR, R_CH);
-		for (int i = 0; i < 6; i++) {
-			sphere_scattering_rL [i].setup (1.0 / dp.inv_cT, dp.a);
-			sphere_scattering_rR [i].setup (1.0 / dp.inv_cT, dp.a);
-			pinna_scattering_rL [i].setSR (SR, L_CH);
-			pinna_scattering_rR [i].setSR (SR, R_CH);
-		}
-		xtalk_canceller_L.setup (1.0 / dp.inv_cT, dp.a);
-		xtalk_canceller_R.setup (1.0 / dp.inv_cT, dp.a);
 	}
 
 	Vst::Sample32* in = data.inputs[0].channelBuffers32[0];
@@ -331,23 +192,23 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			r_out_R = LPF_R.process (r_out_R);
 			in++;
 			switch (gp.output) {
-				case COMBINED_WAVES:
+				case (int32) OUTPUT_L:: COMBINED_WAVES:
 					b_out_L = d_out_L + r_out_L;
 					b_out_R = d_out_R + r_out_R;
 					break;
-				case DIRECT_WAVE:
+				case (int32) OUTPUT_L:: DIRECT_WAVE:
 					b_out_L = d_out_L;
 					b_out_R = d_out_R;
 					break;
-				case REFLECTED_WAVES:
+				case (int32) OUTPUT_L:: REFLECTED_WAVES:
 					b_out_L = r_out_L;
 					b_out_R = r_out_R;
 					break;
-				case SCATTERED_WAVE:
+				case (int32) OUTPUT_L:: SCATTERED_WAVE:
 					b_out_L = d_sc_L;
 					b_out_R = d_sc_R;
 					break;
-				case INCIDENT_WAVE:
+				case (int32) OUTPUT_L:: INCIDENT_WAVE:
 					b_out_L = d_ud_L;
 					b_out_R = d_ud_R;
 					break;
@@ -356,7 +217,7 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			double para_L, para_R, cross_L, cross_R;
 			xtalk_canceller_L.process (b_out_L, dp.sin_phiL, para_L, cross_L);
 			xtalk_canceller_R.process (b_out_R, dp.sin_phiL, para_R, cross_R);
-			if (gp.format == BINAURAL) {
+			if (gp.format == (int32) FORMAT_L:: BINAURAL) {
 				*out_L++ = b_out_L;
 				*out_R++ = b_out_R;
 			} else {	// TRANSAURAL
@@ -397,97 +258,63 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 	IBStreamer streamer (state, kLittleEndian);
 	
 	// suzumushi:
-	if (next_gp.param_changed == true)
+	if (gp_load.param_changed == true)
 		return (kResultFalse);
 
-	if (streamer.readDouble (next_gp.s_x) == false)
+	if (streamer.readDouble (gp_load.s_x) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.s_y) == false)
+	if (streamer.readDouble (gp_load.s_y) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.s_z) == false)
+	if (streamer.readDouble (gp_load.s_z) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.r) == false)
+	if (streamer.readDouble (gp_load.r) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.theta) == false)
+	if (streamer.readDouble (gp_load.theta) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.phi) == false)
+	if (streamer.readDouble (gp_load.phi) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.xypad) == false)
+	if (streamer.readDouble (gp_load.xypad) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.yzpad) == false)
+	if (streamer.readDouble (gp_load.yzpad) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.reflectance) == false)
+	if (streamer.readDouble (gp_load.reflectance) == false)
 		return (kResultFalse);
-	if (streamer.readDouble (next_gp.fc) == false)
-		return (kResultFalse);
-
-	if (streamer.readDouble (next_gp.c) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (next_gp.a) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (next_gp.r_x) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (next_gp.r_y) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (next_gp.r_z) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (next_gp.c_x) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (next_gp.c_y) == false)
-		return (kResultFalse);
-	if (streamer.readDouble (next_gp.c_z) == false)
+	if (streamer.readDouble (gp_load.fc) == false)
 		return (kResultFalse);
 
-	if (streamer.readInt32 (next_gp.hrir) == false)
+	if (streamer.readDouble (gp_load.c) == false)
 		return (kResultFalse);
-	if (streamer.readInt32 (next_gp.output) == false)
+	if (streamer.readDouble (gp_load.a) == false)
 		return (kResultFalse);
-	if (streamer.readInt32 (next_gp.bypass) == false)
+	if (streamer.readDouble (gp_load.r_x) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (gp_load.r_y) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (gp_load.r_z) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (gp_load.c_x) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (gp_load.c_y) == false)
+		return (kResultFalse);
+	if (streamer.readDouble (gp_load.c_z) == false)
+		return (kResultFalse);
+
+	if (streamer.readInt32 (gp_load.hrir) == false)
+		return (kResultFalse);
+	if (streamer.readInt32 (gp_load.output) == false)
+		return (kResultFalse);
+	if (streamer.readInt32 (gp_load.bypass) == false)
 		return (kResultFalse);
 
 	// for backward compatibility 
-	if (streamer.readInt32 (next_gp.format) == false)
-		next_gp.format = BINAURAL;
-	if (streamer.readDouble (next_gp.phiL) == false)
-		next_gp.phiL = phiL_default;
+	if (streamer.readInt32 (gp_load.format) == false)
+		gp_load.format = (int32) FORMAT_L:: BINAURAL;
+	if (streamer.readDouble (gp_load.phiL) == false)
+		gp_load.phiL = phiL.def;
 
-	next_gp.param_changed = true;
+	gp_load.param_changed = true;
 
 	return (kResultOk);
-}
-
-void SoundObjectProcessor:: gp_update ()
-{
-	if (next_gp.param_changed) {
-		gp.s_x = next_gp.s_x;
-		gp.s_y = next_gp.s_y;
-		gp.s_z = next_gp.s_z;
-		gp.r = next_gp.r;
-		gp.theta = next_gp.theta;
-		gp.phi = next_gp.phi;
-		gp.xypad = next_gp.xypad;
-		gp.yzpad = next_gp.yzpad;
-		gp.reflectance = next_gp.reflectance;
-		gp.fc = next_gp.fc;
-		gp.phiL = next_gp.phiL;
-
-		gp.c = next_gp.c;
-		gp.a = next_gp.a;
-		gp.r_x = next_gp.r_x;
-		gp.r_y = next_gp.r_y;
-		gp.r_z = next_gp.r_z;
-		gp.c_x = next_gp.c_x;
-		gp.c_y = next_gp.c_y;
-		gp.c_z = next_gp.c_z;
-
-		gp.hrir = next_gp.hrir;
-		gp.output = next_gp.output;
-		gp.format = next_gp.format;
-		gp.bypass = next_gp.bypass;
-
-		next_gp.param_changed = false;
-		dsp_reset ();
-	}
 }
 
 //------------------------------------------------------------------------
@@ -552,8 +379,186 @@ tresult PLUGIN_API SoundObjectProcessor:: getState (IBStream* state)
 
 //------------------------------------------------------------------------
 // suzumushi:
-// DSP reset
-void SoundObjectProcessor:: dsp_reset ()
+
+void SoundObjectProcessor:: gui_param_loading ()
+{
+	if (gp_load.param_changed) {
+		gp.s_x = gp_load.s_x;
+		gp.s_y = gp_load.s_y;
+		gp.s_z = gp_load.s_z;
+		gp.r = gp_load.r;
+		gp.theta = gp_load.theta;
+		gp.phi = gp_load.phi;
+		gp.xypad = gp_load.xypad;
+		gp.yzpad = gp_load.yzpad;
+		gp.reflectance = gp_load.reflectance;
+		gp.fc = gp_load.fc;
+		gp.phiL = gp_load.phiL;
+
+		gp.c = gp_load.c;
+		gp.a = gp_load.a;
+		gp.r_x = gp_load.r_x;
+		gp.r_y = gp_load.r_y;
+		gp.r_z = gp_load.r_z;
+		gp.c_x = gp_load.c_x;
+		gp.c_y = gp_load.c_y;
+		gp.c_z = gp_load.c_z;
+
+		gp.hrir = gp_load.hrir;
+		gp.output = gp_load.output;
+		gp.format = gp_load.format;
+		gp.bypass = gp_load.bypass;
+
+		gp_load.param_changed = false;
+		reset ();
+	}
+}
+
+void SoundObjectProcessor:: gui_param_update (const ParamID paramID, const ParamValue paramValue) 
+{
+	Vst::ParamValue update;
+
+	switch (paramID) {
+		case s_x.tag:
+			update = rangeParameter:: toPlain (paramValue, s_x.min, s_x.max);
+			if (gp.s_x != update) {
+				gp.s_x = update;
+				gp.param_changed = true;
+			}
+			break;
+		case s_y.tag:
+			update = rangeParameter:: toPlain (paramValue, s_y.min, s_y.max);
+			if (gp.s_y != update) {
+				gp.s_y = update;
+				gp.param_changed = true;
+			}
+			break;
+		case s_z.tag:
+			update = rangeParameter:: toPlain (paramValue, s_z.min, s_z.max);
+			if (gp.s_z != update) {
+				gp.s_z = update;
+				gp.param_changed = true;
+			}
+			break;
+		case r.tag:
+			update = rangeParameter:: toPlain (paramValue, r.min, r.max);
+			if (gp.r != update) {
+				gp.r = update;
+				gp.param_changed = gp.r_theta_changed = true;
+			}
+			break;
+		case theta.tag:
+			update = rangeParameter:: toPlain (paramValue, theta.min, theta.max);
+			if (gp.theta != update) {
+				gp.theta = update;
+				gp.param_changed = gp.r_theta_changed = true;
+			}
+			break;
+		case phi.tag:
+			update = rangeParameter:: toPlain (paramValue, phi.min, phi.max);
+			if (gp.phi != update) {
+				gp.phi = update;
+				gp.param_changed = gp.phi_changed = true;
+			}
+			break;
+		case xypad.tag:
+			update = rangeParameter:: toPlain (paramValue, xypad.min, xypad.max);
+			if (gp.xypad != update) {
+				gp.xypad = update;
+				gp.param_changed = gp.xypad_changed = true;
+			}
+			break;
+		case yzpad.tag:
+			update = rangeParameter:: toPlain (paramValue, yzpad.min, yzpad.max);
+			if (gp.yzpad != update) {
+				gp.yzpad = update;
+				gp.param_changed = gp.yzpad_changed = true;
+			}
+			break;
+		case reflectance.tag:
+			update = rangeParameter:: toPlain (paramValue, reflectance.min, reflectance.max);
+			if (gp.reflectance != update) {
+				gp.reflectance = update;
+				gp.param_changed = true;
+			}
+			break;
+		case fc.tag:
+			gp.fc = InfLogTaperParameter:: toPlain (paramValue, fc.min, fc.max); 
+			break;
+
+		case c.tag:
+			gp.c = rangeParameter:: toPlain (paramValue, c.min, c.max);
+			break;
+		case a.tag:
+			gp.a = rangeParameter:: toPlain (paramValue, a.min, a.max);
+			break;
+		case r_x.tag:
+			update = rangeParameter:: toPlain (paramValue, r_x.min, r_x.max);
+			if (gp.r_x != update) {
+				gp.r_x = update;
+				gp.room_update ();
+			}
+			break;
+		case r_y.tag:
+			update = rangeParameter:: toPlain (paramValue, r_y.min, r_y.max);
+			if (gp.r_y != update) {
+				gp.r_y = update;
+				gp.room_update ();
+			}
+			break;
+		case r_z.tag:
+			update = rangeParameter:: toPlain (paramValue, r_z.min, r_z.max);
+			if (gp.r_z != update) {
+				gp.r_z = update;
+				gp.room_update ();
+			}
+			break;
+		case c_x.tag:
+			update = rangeParameter:: toPlain (paramValue, c_x.min, c_x.max);
+			if (gp.c_x != update) {
+				gp.c_x = update;
+				gp.room_update ();
+			}
+			break;
+		case c_y.tag:
+			update = rangeParameter:: toPlain (paramValue, c_y.min, c_y.max);
+			if (gp.c_y != update) {
+				gp.c_y = update;
+				gp.room_update ();
+			}
+			break;
+		case c_z.tag:
+			update = rangeParameter:: toPlain (paramValue, c_z.min, c_z.max);
+			if (gp.c_z != update) {
+				gp.c_z = update;
+				gp.room_update ();
+			}
+			break;
+		case hrir.tag:
+			gp.hrir = stringListParameter:: toPlain (paramValue, (int32) HRIR_L:: LIST_LEN);
+			break;
+		case output.tag:
+			gp.output = stringListParameter:: toPlain (paramValue, (int32) OUTPUT_L:: LIST_LEN);
+			break;
+		case bypass.tag:
+			gp.bypass = paramValue;
+			if (! gp.bypass)				// return from bypass
+				reset ();
+			break;
+		case format.tag:
+			gp.format = stringListParameter:: toPlain (paramValue, (int32 )FORMAT_L:: LIST_LEN);
+			break;
+		case phiL.tag:
+			update = rangeParameter:: toPlain (paramValue, phiL.min, phiL.max);
+			if (gp.phiL != update) {
+				gp.phiL = update;
+				gp.param_changed = true;
+			}
+			break;
+	}
+}
+
+void SoundObjectProcessor:: reset ()
 {
 	up_down_sampling_dL.reset ();
 	up_down_sampling_dR.reset ();
@@ -574,7 +579,7 @@ void SoundObjectProcessor:: dsp_reset ()
 	xtalk_canceller_L.reset ();
 	xtalk_canceller_R.reset ();
 
-	gp.first_frame = true;
+	gp.reset = true;
 }
 
 //------------------------------------------------------------------------

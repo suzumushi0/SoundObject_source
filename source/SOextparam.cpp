@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2022 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2022-1-19		SOextparam.cpp
+// 2023-3-13		SOextparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -42,13 +42,30 @@ bool LogTaperParameter:: fromString (const TChar* string, ParamValue& valueNorma
 
 ParamValue LogTaperParameter:: toPlain (ParamValue valueNormalized) const
 {
-	return (to_plain (valueNormalized, minPlain, maxPlain));
+	return (toPlain (valueNormalized, minPlain, maxPlain));
 }
 
 ParamValue LogTaperParameter:: toNormalized (ParamValue plainValue) const
 {
-	return (std::log ((plainValue - minPlain) / (maxPlain - minPlain) * 80.0 + 1.0) / std::log (81.0));
+	return (toNormalized (plainValue, minPlain, maxPlain));
 }
+
+
+
+InfLogTaperParameter:: InfLogTaperParameter (const TChar* title, ParamID tag, const TChar* units,
+		ParamValue minPlain, ParamValue maxPlain, ParamValue defaultValuePlain, 
+		int32 stepCount, int32 flags, UnitID unitID, const TChar* shortTitle):
+	LogTaperParameter (title, tag, units, minPlain, maxPlain, defaultValuePlain, stepCount, flags, unitID, shortTitle) {}
+
+void InfLogTaperParameter:: toString (ParamValue valueNormalized, String128 string) const
+{
+	UString wrapper (string, str16BufferSize (String128));
+	if (valueNormalized == 1.0)
+		wrapper.assign ((char16 *) u"\x221E");			// U+221E: Infinity
+	else if (! wrapper.printFloat (toPlain (valueNormalized), precision))
+		string[0] = 0;
+}
+
 
 
 InfParameter:: InfParameter (const TChar* title, ParamID tag, const TChar* units,
@@ -65,21 +82,6 @@ void InfParameter:: toString (ParamValue valueNormalized, String128 string) cons
 		wrapper.assign ((char16 *) u"-\x221E");
 	else if (max_Inf && valueNormalized == 1.0)
 		wrapper.assign ((char16 *) u"\x221E");
-	else if (! wrapper.printFloat (toPlain (valueNormalized), precision))
-		string[0] = 0;
-}
-
-
-InfLogTaperParameter:: InfLogTaperParameter (const TChar* title, ParamID tag, const TChar* units,
-		ParamValue minPlain, ParamValue maxPlain, ParamValue defaultValuePlain, 
-		int32 stepCount, int32 flags, UnitID unitID, const TChar* shortTitle):
-	LogTaperParameter (title, tag, units, minPlain, maxPlain, defaultValuePlain, stepCount, flags, unitID, shortTitle) {}
-
-void InfLogTaperParameter:: toString (ParamValue valueNormalized, String128 string) const
-{
-	UString wrapper (string, str16BufferSize (String128));
-	if (valueNormalized == 1.0)
-		wrapper.assign ((char16 *) u"\x221E");			// U+221E: Infinity
 	else if (! wrapper.printFloat (toPlain (valueNormalized), precision))
 		string[0] = 0;
 }

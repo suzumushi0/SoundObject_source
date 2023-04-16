@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2021-8-8		SODDL.h
+// 2023-3-30		SODDL.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -12,15 +12,16 @@
 
 namespace suzumushi {
 
-// Digtal Delay Line
+// Digital Delay Line
 
 template <typename TYPE, unsigned int N>
 class SODDL {
 public:
 	void add (const int at, const TYPE val);
-	void push (const TYPE val);
-	TYPE read ();
-	TYPE read (const int at);
+	void enqueue (const TYPE val);
+	TYPE dequeue ();
+	TYPE read (const int at) const;
+	TYPE read () const;
 	void reset ();
 private:
 	TYPE delay_line [N] {};
@@ -37,7 +38,7 @@ void SODDL <TYPE, N>:: add (const int at, const TYPE val)
 }
 
 template <typename TYPE, unsigned int N>
-void SODDL <TYPE, N>:: push (const TYPE val)
+void SODDL <TYPE, N>:: enqueue (const TYPE val)
 {
 	*head++ = val;						// head points the last data
 	if (head == delay_line + N)
@@ -45,7 +46,7 @@ void SODDL <TYPE, N>:: push (const TYPE val)
 }
 
 template <typename TYPE, unsigned int N>
-TYPE SODDL <TYPE, N>:: read ()
+TYPE SODDL <TYPE, N>:: dequeue ()
 {
 	TYPE ret = *head;
 	*head++ = 0.0;						// read then clear
@@ -55,7 +56,7 @@ TYPE SODDL <TYPE, N>:: read ()
 }
 
 template <typename TYPE, unsigned int N>
-TYPE SODDL <TYPE, N>:: read (const int at)
+TYPE SODDL <TYPE, N>:: read (const int at) const
 {
 	TYPE* at_ptr = head + at;
 	if (at_ptr >= delay_line + N)
@@ -64,13 +65,17 @@ TYPE SODDL <TYPE, N>:: read (const int at)
 }
 
 template <typename TYPE, unsigned int N>
+TYPE SODDL <TYPE, N>:: read () const
+{
+	return (*head);
+}
+
+template <typename TYPE, unsigned int N>
 void SODDL <TYPE, N>:: reset ()
 {
-	for (head = delay_line; head < delay_line + N; head++) {
+	for (head = delay_line; head < delay_line + N; head++)
 		*head = 0.0;
-	}
 	head = delay_line;
 }
 
-} // suzumushi
-
+} // namespace suzumushi
