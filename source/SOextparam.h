@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-3-13		SOextparam.h
+// 2023-5-5		SOextparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -82,7 +82,7 @@ struct logTaperParameter {
 struct infLogTaperParameter: public logTaperParameter {};
 
 struct infParameter: public rangeParameter {
-	bool min_Inf;
+	bool min_inf;
 	bool max_inf;
 };
 

@@ -89,7 +89,7 @@ public:
 	void setup (const TYPE SR, const TYPE fc, const TYPE Q = 0.5);
 	TYPE process (const TYPE xn) override;
 private:
-	bool pass_through {false};			// passt through mode
+	bool pass_through {false};			// pass through mode
 };
 
 template <typename TYPE, TYPE FC_MAX>
