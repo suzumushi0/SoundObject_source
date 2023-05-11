@@ -71,12 +71,10 @@ SOudsampling <TYPE>:: SOudsampling ()
 		}
 		IR_TBL [IR_CENTER] = 1.0;
 		// Blackman window
-		for (int i = 0; i <= IR_CENTER; i++) {
-			TYPE w = 0.42 - 0.5 * cos (pi * i / IR_CENTER) + 0.08 *  cos (2.0 * pi * i / IR_CENTER);
-			IR_TBL [i] *= w;
-		}
+		for (int i = 0; i <= IR_CENTER; i++)
+			IR_TBL [i] *= 0.42 - 0.5 * cos (pi * i / IR_CENTER) + 0.08 *  cos (2.0 * pi * i / IR_CENTER);
 		// normalization
-		TYPE sum = 0.0;;
+		TYPE sum = 0.0;
 		for (int i = 0; i < IR_CENTER; i++)
 			sum += IR_TBL [i];
 		sum = (sum * 2.0 + IR_TBL [IR_CENTER]) / N;
