@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-5-5		SOextparam.h
+// 2023-9-1		SOextparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -17,6 +17,7 @@ using Steinberg::Vst::ParameterInfo;
 using Steinberg::Vst::ParamID;
 using Steinberg::Vst::ParamValue;
 using Steinberg::int32;
+using Steinberg::int16;
 
 
 namespace suzumushi {
@@ -38,13 +39,13 @@ struct rangeParameter {
 	int32 steps;			// step count
 	int32 flags;
 	// helper functions
-	static ParamValue toPlain (const ParamValue normalized, const ParamValue min, const ParamValue max)
+	static ParamValue toPlain (const ParamValue normalized, const rangeParameter range)
 	{
-		return (normalized * (max - min) + min);
+		return (normalized * (range.max - range.min) + range.min);
 	}
-	static ParamValue toNormalized (const ParamValue plain, const ParamValue min, const ParamValue max)
+	static ParamValue toNormalized (const ParamValue plain, const rangeParameter range)
 	{
-		return ((plain - min) / (max - min));
+		return ((plain - range.min) / (range.max - range.min));
 	}
 	static ParamValue dB_to_ratio (const ParamValue dB)
 	{
@@ -92,9 +93,6 @@ struct infParameter: public rangeParameter {
 // Extended parameters 
 //
 
-#include <cmath>
-#include "public.sdk/source/vst/vsteditcontroller.h"
-
 namespace Steinberg {
 namespace Vst {
 
@@ -116,18 +114,26 @@ public:
 
 	/** Converts a normalized value to plain value. */
 	ParamValue toPlain (ParamValue valueNormalized) const SMTG_OVERRIDE;
-	// helper function
+	// helper functions
 	static ParamValue toPlain (ParamValue normalized, ParamValue minPlain, ParamValue maxPlain)
 	{
 		return ((std::pow (81.0, normalized) - 1.0) / 80.0 * (maxPlain - minPlain) + minPlain);
 	}
+	static ParamValue toPlain (const ParamValue normalized, const suzumushi::logTaperParameter range)
+	{
+		return (toPlain (normalized, range.min, range.max));
+	}
 
 	/** Converts a plain value to a normalized value. */
 	ParamValue toNormalized (ParamValue plainValue) const SMTG_OVERRIDE;
-	// helper function
+	// helper functions
 	static ParamValue toNormalized (ParamValue plainValue, ParamValue minPlain, ParamValue maxPlain)
 	{
 		return (std::log ((plainValue - minPlain) / (maxPlain - minPlain) * 80.0 + 1.0) / std::log (81.0));
+	}
+	static ParamValue toNormalized (const ParamValue plainValue, const suzumushi::logTaperParameter range)
+	{
+		return (toNormalized (plainValue, range.min, range.max));
 	}
 
 	OBJ_METHODS (LogTaperParameter, Parameter)

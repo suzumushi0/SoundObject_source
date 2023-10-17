@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-4-15		SOcontroller.cpp
+// 2023-10-17		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -360,6 +360,11 @@ IPlugView* PLUGIN_API SoundObjectController:: createView (FIDString name)
 	if (FIDStringsEqual (name, Vst::ViewType::kEditor)) {
 		// create your editor here and return a IPlugView ptr of it
 		auto* view = new VSTGUI::VST3Editor (this, "view", "SoundObject.uidesc");
+
+		// suzumushi
+		std::vector<double> zoom_factors = {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0};
+		view->setAllowedZoomFactors (zoom_factors);
+
 		return view;
 	}
 	return nullptr;

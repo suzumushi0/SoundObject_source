@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-4-15		SOprocessor.cpp
+// 2023-10-17		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -420,115 +420,115 @@ void SoundObjectProcessor:: gui_param_update (const ParamID paramID, const Param
 
 	switch (paramID) {
 		case s_x.tag:
-			update = rangeParameter:: toPlain (paramValue, s_x.min, s_x.max);
+			update = rangeParameter:: toPlain (paramValue, s_x);
 			if (gp.s_x != update) {
 				gp.s_x = update;
 				gp.param_changed = true;
 			}
 			break;
 		case s_y.tag:
-			update = rangeParameter:: toPlain (paramValue, s_y.min, s_y.max);
+			update = rangeParameter:: toPlain (paramValue, s_y);
 			if (gp.s_y != update) {
 				gp.s_y = update;
 				gp.param_changed = true;
 			}
 			break;
 		case s_z.tag:
-			update = rangeParameter:: toPlain (paramValue, s_z.min, s_z.max);
+			update = rangeParameter:: toPlain (paramValue, s_z);
 			if (gp.s_z != update) {
 				gp.s_z = update;
 				gp.param_changed = true;
 			}
 			break;
 		case r.tag:
-			update = rangeParameter:: toPlain (paramValue, r.min, r.max);
+			update = rangeParameter:: toPlain (paramValue, r);
 			if (gp.r != update) {
 				gp.r = update;
 				gp.param_changed = gp.r_theta_changed = true;
 			}
 			break;
 		case theta.tag:
-			update = rangeParameter:: toPlain (paramValue, theta.min, theta.max);
+			update = rangeParameter:: toPlain (paramValue, theta);
 			if (gp.theta != update) {
 				gp.theta = update;
 				gp.param_changed = gp.r_theta_changed = true;
 			}
 			break;
 		case phi.tag:
-			update = rangeParameter:: toPlain (paramValue, phi.min, phi.max);
+			update = rangeParameter:: toPlain (paramValue, phi);
 			if (gp.phi != update) {
 				gp.phi = update;
 				gp.param_changed = gp.phi_changed = true;
 			}
 			break;
 		case xypad.tag:
-			update = rangeParameter:: toPlain (paramValue, xypad.min, xypad.max);
+			update = rangeParameter:: toPlain (paramValue, xypad);
 			if (gp.xypad != update) {
 				gp.xypad = update;
 				gp.param_changed = gp.xypad_changed = true;
 			}
 			break;
 		case yzpad.tag:
-			update = rangeParameter:: toPlain (paramValue, yzpad.min, yzpad.max);
+			update = rangeParameter:: toPlain (paramValue, yzpad);
 			if (gp.yzpad != update) {
 				gp.yzpad = update;
 				gp.param_changed = gp.yzpad_changed = true;
 			}
 			break;
 		case reflectance.tag:
-			update = rangeParameter:: toPlain (paramValue, reflectance.min, reflectance.max);
+			update = rangeParameter:: toPlain (paramValue, reflectance);
 			if (gp.reflectance != update) {
 				gp.reflectance = update;
 				gp.param_changed = true;
 			}
 			break;
 		case fc.tag:
-			gp.fc = InfLogTaperParameter:: toPlain (paramValue, fc.min, fc.max); 
+			gp.fc = InfLogTaperParameter:: toPlain (paramValue, fc); 
 			break;
 
 		case c.tag:
-			gp.c = rangeParameter:: toPlain (paramValue, c.min, c.max);
+			gp.c = rangeParameter:: toPlain (paramValue, c);
 			break;
 		case a.tag:
-			gp.a = rangeParameter:: toPlain (paramValue, a.min, a.max);
+			gp.a = rangeParameter:: toPlain (paramValue, a);
 			break;
 		case r_x.tag:
-			update = rangeParameter:: toPlain (paramValue, r_x.min, r_x.max);
+			update = rangeParameter:: toPlain (paramValue, r_x);
 			if (gp.r_x != update) {
 				gp.r_x = update;
 				gp.room_update ();
 			}
 			break;
 		case r_y.tag:
-			update = rangeParameter:: toPlain (paramValue, r_y.min, r_y.max);
+			update = rangeParameter:: toPlain (paramValue, r_y);
 			if (gp.r_y != update) {
 				gp.r_y = update;
 				gp.room_update ();
 			}
 			break;
 		case r_z.tag:
-			update = rangeParameter:: toPlain (paramValue, r_z.min, r_z.max);
+			update = rangeParameter:: toPlain (paramValue, r_z);
 			if (gp.r_z != update) {
 				gp.r_z = update;
 				gp.room_update ();
 			}
 			break;
 		case c_x.tag:
-			update = rangeParameter:: toPlain (paramValue, c_x.min, c_x.max);
+			update = rangeParameter:: toPlain (paramValue, c_x);
 			if (gp.c_x != update) {
 				gp.c_x = update;
 				gp.room_update ();
 			}
 			break;
 		case c_y.tag:
-			update = rangeParameter:: toPlain (paramValue, c_y.min, c_y.max);
+			update = rangeParameter:: toPlain (paramValue, c_y);
 			if (gp.c_y != update) {
 				gp.c_y = update;
 				gp.room_update ();
 			}
 			break;
 		case c_z.tag:
-			update = rangeParameter:: toPlain (paramValue, c_z.min, c_z.max);
+			update = rangeParameter:: toPlain (paramValue, c_z);
 			if (gp.c_z != update) {
 				gp.c_z = update;
 				gp.room_update ();
@@ -549,7 +549,7 @@ void SoundObjectProcessor:: gui_param_update (const ParamID paramID, const Param
 			gp.format = stringListParameter:: toPlain (paramValue, (int32 )FORMAT_L:: LIST_LEN);
 			break;
 		case phiL.tag:
-			update = rangeParameter:: toPlain (paramValue, phiL.min, phiL.max);
+			update = rangeParameter:: toPlain (paramValue, phiL);
 			if (gp.phiL != update) {
 				gp.phiL = update;
 				gp.param_changed = true;

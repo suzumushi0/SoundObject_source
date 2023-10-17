@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-4-15		SODSPparam.cpp
+// 2023-10-17		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -72,10 +72,10 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 				int32 p_offset = 0;		// parameter offset
 				IParamValueQueue* paramQueue = outParam->addParameterData (HV_XY, q_index);
 				if (paramQueue)
-					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_xy, hv.min, hv.max), p_index);
+					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_xy, hv), p_index);
 				paramQueue = outParam->addParameterData (HV_YZ, q_index);
 				if (paramQueue)
-					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_yz, hv.min, hv.max), p_index);
+					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_yz, hv), p_index);
 			}
 		}
 		gp.fb_counter--;
@@ -137,28 +137,28 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			int32 p_offset = 0;		// parameter offset
 			IParamValueQueue* paramQueue = outParam->addParameterData (s_x.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_x, s_x.min, s_x.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_x, s_x), p_index);
 			paramQueue = outParam->addParameterData (s_y.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_y, s_y.min, s_y.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_y, s_y), p_index);
 			paramQueue = outParam->addParameterData (s_z.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_z, s_z.min, s_z.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.s_z, s_z), p_index);
 			paramQueue = outParam->addParameterData (r.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.r, r.min, r.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.r, r), p_index);
 			paramQueue = outParam->addParameterData (theta.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.theta, theta.min, theta.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.theta, theta), p_index);
 			paramQueue = outParam->addParameterData (phi.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.phi, phi.min, phi.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.phi, phi), p_index);
 			paramQueue = outParam->addParameterData (xypad.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.xypad, xypad.min, xypad.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.xypad, xypad), p_index);
 			paramQueue = outParam->addParameterData (yzpad.tag, q_index);
 			if (paramQueue)
-				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.yzpad, yzpad.min, yzpad.max), p_index);
+				paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.yzpad, yzpad), p_index);
 		}
 
 		// velocity limiter
@@ -321,13 +321,13 @@ void SODSPparam:: nrt_param_update (struct GUI_param &gp, IParameterChanges* out
 		int32 p_offset = 0;		// parameter offset
 		IParamValueQueue* paramQueue = outParam->addParameterData (c_x.tag, q_index);
 		if (paramQueue)
-			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_x, c_x.min, c_x.max), p_index);
+			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_x, c_x), p_index);
 		paramQueue = outParam->addParameterData (c_y.tag, q_index);
 		if (paramQueue)
-			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_y, c_y.min, c_y.max), p_index);
+			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_y, c_y), p_index);
 		paramQueue = outParam->addParameterData (c_z.tag, q_index);
 		if (paramQueue)
-			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_z, c_z.min, c_z.max), p_index);
+			paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (gp.c_z, c_z), p_index);
 	}
 
 	// update of reflected waves parameters
