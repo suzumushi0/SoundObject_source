@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-10-17		SOcontroller.cpp
+// 2023-11-26		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -111,6 +111,12 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 	phiL_param -> setPrecision (precision1);
 	parameters.addParameter (phiL_param);
 
+	// d_att: distance attenuation
+	Vst::RangeParameter* d_att_param = new Vst::RangeParameter (
+		STR16 ("Distance attenuation"), d_att.tag, STR16 ("dB"),
+		d_att.min, d_att.max, d_att.def, d_att.steps, d_att.flags);
+	d_att_param -> setPrecision (precision1);
+	parameters.addParameter (d_att_param);
 
 	// c: acoustic speed [m/s]
 	Vst::RangeParameter* c_param = new Vst::RangeParameter (
@@ -200,18 +206,6 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 		bypass.min, bypass.max, bypass.def, bypass.steps, bypass.flags);
 	parameters.addParameter (bypass_param);
 
-	// hv_xy: HVLines for xy Pad
-	Vst::RangeParameter* hvxy_param = new Vst::RangeParameter (
-		STR16 ("HVLines_xy"), HV_XY, nullptr,
-		hv.min, hv.max, hv.def, hv.steps, hv.flags);
-	parameters.addParameter (hvxy_param);
-
-	// hv_yz: HVLines for yz Pad
-	Vst::RangeParameter* hvyz_param = new Vst::RangeParameter (
-		STR16 ("HVLines_yz"), HV_YZ, nullptr,
-		hv.min, hv.max, hv.def, hv.steps, hv.flags);
-	parameters.addParameter (hvyz_param);
-
 	return (result);
 }
 
@@ -236,7 +230,15 @@ tresult PLUGIN_API SoundObjectController:: setComponentState (IBStream* state)
 	int32 itmp;
 	IBStreamer streamer (state, kLittleEndian);
 
-	if (streamer.readDouble (dtmp) == false)
+	if (streamer.readDouble (dtmp) == true) {
+		if (dtmp > max_side_len / 2.0) {					// new format
+			int version;
+			if (streamer.readInt32 (version) == false)		// read version
+				return (kResultFalse);
+			if (streamer.readDouble (dtmp) == false)		// read s_x
+				return (kResultFalse);
+		}
+	} else
 		return (kResultFalse);
 	setParamNormalized (s_x.tag, plainParamToNormalized (s_x.tag, dtmp));
 
@@ -333,6 +335,11 @@ tresult PLUGIN_API SoundObjectController:: setComponentState (IBStream* state)
 	else
 		setParamNormalized (phiL.tag, plainParamToNormalized (phiL.tag, phiL.def));
 
+	if (streamer.readDouble (dtmp) == true)
+		setParamNormalized (d_att.tag, plainParamToNormalized (d_att.tag, dtmp));
+	else
+		setParamNormalized (d_att.tag, plainParamToNormalized (d_att.tag, d_att.def));
+
 	return (kResultOk);
 }
 
@@ -359,7 +366,7 @@ IPlugView* PLUGIN_API SoundObjectController:: createView (FIDString name)
 	// Here the Host wants to open your editor (if you have one)
 	if (FIDStringsEqual (name, Vst::ViewType::kEditor)) {
 		// create your editor here and return a IPlugView ptr of it
-		auto* view = new VSTGUI::VST3Editor (this, "view", "SoundObject.uidesc");
+		auto* view = new VSTGUI::SOVST3Editor (this, "view", "SoundObject.uidesc");
 
 		// suzumushi
 		std::vector<double> zoom_factors = {0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0};

@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-10-17		SODSPparam.cpp
+// 2023-11-27		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -13,33 +13,6 @@
 
 namespace suzumushi {
 
-ParamValue SODSPparam:: calculateValue (ParamValue x, ParamValue y)
-{
-	x = std::floor (x * 1'000.0 + 0.5) * 0.001;
-	y = std::floor (y * 1'000.0 + 0.5) * 0.000'000'1;
-	return (x + y);
-}
-void SODSPparam:: calculateXY (ParamValue value, ParamValue& x, ParamValue& y)
-{
-	x = std::floor (value * 1'000.0 + 0.5) * 0.001;
-	y = std::floor ((value - x) * 10'000'000.0 + 0.5) * 0.001;
-}
-
-double SODSPparam:: norm_to_taper (double norm)
-{
-	double coord = 1.0 - 2.0 * norm;
-	double ret = LogTaperParameter:: toPlain (abs (coord), 0.0, max_side_len / 2.0);
-	return (coord >= 0.0 ? ret : - ret);
-}
-
-double SODSPparam:: taper_to_norm (double taper)
-{
-	double ret = LogTaperParameter:: toNormalized (abs (taper), 0.0, max_side_len / 2.0);
-	if (taper < 0.0)
-		ret = - ret;
-	return ((1.0 - ret) / 2.0);
-}
-
 // real-time parameters update
 void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outParam)
 {
@@ -48,38 +21,6 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		smoothing = true;
 	else
 		smoothing = false;
-
-	// HVLines parameters feedback
-	if (gp.reset || gp.room_changed) {
-		if (gp.reset)
-			gp.initial_room_update ();	// for Reaper
-		if (gp.fb_counter == gp.fb_counter_init || gp.fb_counter == 0) {
-			ParamValue hv_xy, hv_yz;
-			double x_axis;
-			if (gp.fb_counter == 0) {
-				gp.param_changed = false;
-				x_axis = taper_to_norm (- gp.c_y);
-				hv_xy = calculateValue (x_axis, taper_to_norm (- gp.c_x));
-				hv_yz = calculateValue (x_axis, taper_to_norm (- gp.c_z));
-			} else {
-				x_axis = taper_to_norm (gp.r_y - gp.c_y);
-				hv_xy = calculateValue (x_axis, taper_to_norm (gp.r_x - gp.c_x));
-				hv_yz = calculateValue (x_axis, taper_to_norm (gp.r_z - gp.c_z));
-			}
-			if (outParam) {
-				int32 q_index = 0;		// paramQueue index
-				int32 p_index = 0;		// parameter index
-				int32 p_offset = 0;		// parameter offset
-				IParamValueQueue* paramQueue = outParam->addParameterData (HV_XY, q_index);
-				if (paramQueue)
-					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_xy, hv), p_index);
-				paramQueue = outParam->addParameterData (HV_YZ, q_index);
-				if (paramQueue)
-					paramQueue->addPoint (p_offset, rangeParameter:: toNormalized (hv_yz, hv), p_index);
-			}
-		}
-		gp.fb_counter--;
-	}
 
 	// parameters update
 	if (gp.reset || gp.param_changed) {
@@ -99,16 +40,16 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		if (gp.yzpad_changed) {
 			gp.yzpad_changed = false;
 			double y, z;
-			calculateXY (gp.yzpad, y, z);
-			gp.s_y = norm_to_taper (y);
-			gp.s_z = norm_to_taper (z);
+			VSTGUI::SOXYPad::calculateXY (gp.yzpad, y, z);
+			gp.s_y = VSTGUI::SOXYPad:: norm_to_taper (y);
+			gp.s_z = VSTGUI::SOXYPad:: norm_to_taper (z);
 		} 
 		if (gp.xypad_changed) {
 			gp.xypad_changed = false;
 			double x, y;
-			calculateXY (gp.xypad, y, x);
-			gp.s_x = norm_to_taper (x);
-			gp.s_y = norm_to_taper (y);
+			VSTGUI::SOXYPad::calculateXY (gp.xypad, y, x);
+			gp.s_x = VSTGUI::SOXYPad:: norm_to_taper (x);
+			gp.s_y = VSTGUI::SOXYPad:: norm_to_taper (y);
 		}
 
 		// position limiter
@@ -126,9 +67,9 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			if (gp.s_y < 0.0)
 				gp.phi = 360.0 - gp.phi;
 		}
-		double x_axis = taper_to_norm (gp.s_y);
-		gp.xypad = calculateValue (x_axis, taper_to_norm (gp.s_x));
-		gp.yzpad = calculateValue (x_axis, taper_to_norm (gp.s_z));
+		double x_axis = VSTGUI::SOXYPad::taper_to_norm (gp.s_y);
+		gp.xypad = VSTGUI::SOXYPad:: calculateValue (x_axis, VSTGUI::SOXYPad:: taper_to_norm (gp.s_x));
+		gp.yzpad = VSTGUI::SOXYPad:: calculateValue (x_axis, VSTGUI::SOXYPad:: taper_to_norm (gp.s_z));
 
 		// parameters feedback
 		if (outParam) {
@@ -210,8 +151,9 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			distance_R = sqrt (r_2 - a_2) + a_r * (pi - theta_o - theta_d);
 
 		// level limiter 
-		double next_decay_L = 1.0 / std::max (distance_L, min_dist);
-		double next_decay_R = 1.0 / std::max (distance_R, min_dist);
+		double d_att = gp.d_att / -6.0;
+		double next_decay_L = 1.0 / std::max (pow (distance_L, d_att), min_dist);
+		double next_decay_R = 1.0 / std::max (pow (distance_R, d_att), min_dist);
 
 		// update of reflected waves parameters
 		valarray <double> v_next_cos_theta_o (6);
@@ -269,7 +211,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 				v_distance_R [i] = v_dist [i] + a_r * v_next_cos_theta_o [i];
 			}
 			// level limiter
-			v_next_decay [i] = ref / std::max (v_dist [i], min_dist);
+			v_next_decay [i] = ref / std::max (pow (v_dist [i], d_att), min_dist);
 		}
 		// update of parameter for crosstalk canceller 
 		sin_phiL = sin (gp.phiL / 180.0 * pi);

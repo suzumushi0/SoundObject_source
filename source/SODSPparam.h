@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-4-15		SODSPparam.h
+// 2023-11-23		SODSPparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "SOconfig.h"
 #include "SOparam.h"
+#include "SOXYPad.h"
 
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 using namespace Steinberg;
@@ -58,14 +58,6 @@ public:
 	double a_r {a.def};						// radius of sphere
 
 private:
-	// XYPad helper functions
-	ParamValue calculateValue (ParamValue x, ParamValue y);
-	void calculateXY (ParamValue value, ParamValue& x, ParamValue& y);
-
-	// 10% logarithmic taper curve (A curve variable resistor in Japan) helper functions for XYPad
-	double norm_to_taper (double norm);
-	double taper_to_norm (double taper);
-
 	// non real-time parameters
 	double a_2 {a.def * a.def};
 

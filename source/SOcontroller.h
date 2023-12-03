@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021 suzumushi
+// Copyright (c) 2021-2023 suzumushi
 //
-// 2021-8-8		SOcontroller.h
+// 2023-11-21		SOcontroller.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -15,6 +15,7 @@
 // suzumushi: 
 #include "SOparam.h"
 #include "SOextparam.h"
+#include "SOvst3editor.h"
 
 namespace suzumushi {
 

@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-4-15		SOparam.h
+// 2023-11-27		SOparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -48,10 +48,9 @@ constexpr ParamID OUTPUT {19};				// output selector
 constexpr ParamID BYPASS {20};				// bypass flag
 constexpr ParamID FORMAT {21};				// output format
 // real-time parameters
-constexpr ParamID PHIL {22};				// azimuth angle to left speaker [deg (0..90)]						
-// Horizontal and vertical lines for XYPAD and YZPAD
-constexpr ParamID HV_XY {23};				// xy Pad
-constexpr ParamID HV_YZ	{24};				// yz Pad
+constexpr ParamID PHIL {22};				// azimuth angle to left speaker [deg (0..90)]
+constexpr ParamID D_ATT {23};				// distance attenuation [dB] (when distance is doubled)
+
 
 // attributes of GUI and host facing parameter
 
@@ -165,6 +164,17 @@ constexpr struct rangeParameter phiL = {
 	{ParameterInfo::kNoFlags}			// flags
 };
 
+// d_att: distance attenuation	[dB] (when distance is doubled)
+constexpr struct rangeParameter d_att = {
+	D_ATT,								// tag
+	{-6.0},								// min
+	{0.0},								// max
+	{-6.0},								// default
+	{0},								// continuous
+	{ParameterInfo::kCanAutomate}		// flags
+};
+
+
 // c: acoustic speed [m/s]
 constexpr struct rangeParameter c = {
 	C,									// tag
@@ -245,16 +255,6 @@ constexpr struct rangeParameter c_z = {
 	{ParameterInfo::kNoFlags}			// flags
 };
 
-// Horizontal and vertical lines for XYPAD and YZPAD
-constexpr struct rangeParameter hv = {
-	HV_XY,								// tag
-	{0.0},								// min
-	{2.0},								// max
-	{0.0},								// default
-	{0},								// continuous
-	{ParameterInfo::kNoFlags}			// flags
-};
-
 // hrir: HRIR DB selector
 constexpr struct stringListParameter hrir = {
 	HRIR,								// tag
@@ -317,6 +317,7 @@ struct GUI_param {
 	ParamValue reflectance;	// reflectance [dB]
 	ParamValue fc;			// LPF cut-off frequency [KHz]
 	ParamValue phiL;		// azimuth angle to left speaker [deg (0..90)]	
+	ParamValue d_att;		// distance attenuation
 	// non real-time parameters
 	ParamValue c;			// acoustic speed [m/s]
 	ParamValue a;			// radius of the sphere [mm]
@@ -338,8 +339,6 @@ struct GUI_param {
 	bool phi_changed;		// phi is updated
 	bool xypad_changed;		// xy Pad is updated
 	bool yzpad_changed;		// yz Pad is updated
-	bool room_changed;		// r_XX and/or c_XX are updated
-	int32 fb_counter;		// for parameters feedback of HVLines 
 
 	GUI_param () {
 		s_x = suzumushi::s_x.def;
@@ -353,6 +352,7 @@ struct GUI_param {
 		reflectance = suzumushi::reflectance.def;
 		fc = suzumushi::fc.def;
 		phiL = suzumushi::phiL.def;
+		d_att = suzumushi::d_att.def;
 		c = suzumushi::c.def;
 		a = suzumushi::a.def;
 		r_x = suzumushi::r_x.def;
@@ -371,25 +371,6 @@ struct GUI_param {
 		phi_changed = false;
 		xypad_changed = false;
 		yzpad_changed = false;
-		room_changed = false;
-		fb_counter = 0;
-	}
-
-	// for parameters feedback of HVLines 
-	const int32 fb_counter_init {3};
-	const int32 fb_counter_reaper {30};
-
-	void room_update ()
-	{
-		room_changed = true;
-		if (fb_counter < fb_counter_init)
-			fb_counter = fb_counter_init;
-	}
-
-	void initial_room_update ()
-	{
-		room_changed = true;
-		fb_counter = fb_counter_reaper;
 	}
 };
 

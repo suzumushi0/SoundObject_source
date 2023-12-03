@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2023 suzumushi
 //
-// 2023-10-17		SOprocessor.cpp
+// 2023-11-26		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -261,7 +261,15 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 	if (gp_load.param_changed == true)
 		return (kResultFalse);
 
-	if (streamer.readDouble (gp_load.s_x) == false)
+	if (streamer.readDouble (gp_load.s_x) == true) {
+		if (gp_load.s_x > max_side_len / 2.0) {				// new format
+			int version;
+			if (streamer.readInt32 (version) == false)		// read version
+				return (kResultFalse);
+			if (streamer.readDouble (gp_load.s_x) == false)	// read s_x
+				return (kResultFalse);
+		}
+	} else
 		return (kResultFalse);
 	if (streamer.readDouble (gp_load.s_y) == false)
 		return (kResultFalse);
@@ -311,6 +319,8 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 		gp_load.format = (int32) FORMAT_L:: BINAURAL;
 	if (streamer.readDouble (gp_load.phiL) == false)
 		gp_load.phiL = phiL.def;
+	if (streamer.readDouble (gp_load.d_att) == false)
+		gp_load.d_att = d_att.def;
 
 	gp_load.param_changed = true;
 
@@ -324,6 +334,12 @@ tresult PLUGIN_API SoundObjectProcessor:: getState (IBStream* state)
 	IBStreamer streamer (state, kLittleEndian);
 
 	// suzumushi:
+	if (streamer.writeDouble (max_side_len) == false)		// new format
+		return (kResultFalse);
+	int version = 0;										// version 3.0.0
+	if (streamer.writeInt32 (version) == false)				
+		return (kResultFalse);
+
 	if (streamer.writeDouble (gp.s_x) == false)
 		return (kResultFalse);
 	if (streamer.writeDouble (gp.s_y) == false)
@@ -373,6 +389,8 @@ tresult PLUGIN_API SoundObjectProcessor:: getState (IBStream* state)
 
 	if (streamer.writeDouble (gp.phiL) == false)
 		return (kResultFalse);
+	if (streamer.writeDouble (gp.d_att) == false)
+		return (kResultFalse);
 
 	return (kResultOk);
 }
@@ -394,6 +412,7 @@ void SoundObjectProcessor:: gui_param_loading ()
 		gp.reflectance = gp_load.reflectance;
 		gp.fc = gp_load.fc;
 		gp.phiL = gp_load.phiL;
+		gp.d_att = gp_load.d_att;
 
 		gp.c = gp_load.c;
 		gp.a = gp_load.a;
@@ -494,45 +513,33 @@ void SoundObjectProcessor:: gui_param_update (const ParamID paramID, const Param
 			break;
 		case r_x.tag:
 			update = rangeParameter:: toPlain (paramValue, r_x);
-			if (gp.r_x != update) {
+			if (gp.r_x != update)
 				gp.r_x = update;
-				gp.room_update ();
-			}
 			break;
 		case r_y.tag:
 			update = rangeParameter:: toPlain (paramValue, r_y);
-			if (gp.r_y != update) {
+			if (gp.r_y != update)
 				gp.r_y = update;
-				gp.room_update ();
-			}
 			break;
 		case r_z.tag:
 			update = rangeParameter:: toPlain (paramValue, r_z);
-			if (gp.r_z != update) {
+			if (gp.r_z != update)
 				gp.r_z = update;
-				gp.room_update ();
-			}
 			break;
 		case c_x.tag:
 			update = rangeParameter:: toPlain (paramValue, c_x);
-			if (gp.c_x != update) {
+			if (gp.c_x != update)
 				gp.c_x = update;
-				gp.room_update ();
-			}
 			break;
 		case c_y.tag:
 			update = rangeParameter:: toPlain (paramValue, c_y);
-			if (gp.c_y != update) {
+			if (gp.c_y != update)
 				gp.c_y = update;
-				gp.room_update ();
-			}
 			break;
 		case c_z.tag:
 			update = rangeParameter:: toPlain (paramValue, c_z);
-			if (gp.c_z != update) {
+			if (gp.c_z != update)
 				gp.c_z = update;
-				gp.room_update ();
-			}
 			break;
 		case hrir.tag:
 			gp.hrir = stringListParameter:: toPlain (paramValue, (int32) HRIR_L:: LIST_LEN);
@@ -552,6 +559,13 @@ void SoundObjectProcessor:: gui_param_update (const ParamID paramID, const Param
 			update = rangeParameter:: toPlain (paramValue, phiL);
 			if (gp.phiL != update) {
 				gp.phiL = update;
+				gp.param_changed = true;
+			}
+			break;
+		case d_att.tag:
+			update = rangeParameter:: toPlain (paramValue, d_att);
+			if (gp.d_att != update) {
+				gp.d_att = update;
 				gp.param_changed = true;
 			}
 			break;
