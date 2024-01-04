@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2023 suzumushi
+// Copyright (c) 2021-2024 suzumushi
 //
-// 2023-11-27		SODSPparam.cpp
+// 2024-1-3		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -26,7 +26,7 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 	if (gp.reset || gp.param_changed) {
 		gp.param_changed = false;
 
-		// update of the acoustic source position
+		// update of acoustic source position
 		if (gp.r_theta_changed || gp.phi_changed) {
 			double theta_rad = gp.theta * pi / 180.0;
 			double phi_rad = gp.phi * pi / 180.0;
@@ -53,17 +53,16 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		}
 
 		// position limiter
-		gp.s_x = std::min (std::max (gp.s_x, - v_z [4]), v_z [2]);	// z [4]: c_x, z [2]: r_x - c_x
-		gp.s_y = std::min (std::max (gp.s_y, - v_z [1]), v_z [3]);	// z [1]: c_y, z [3]: r_y - c_y
-		gp.s_z = std::min (std::max (gp.s_z, - v_z [0]), v_z [5]);	// z [0]: c_z, z [5]: r_z - c_z
+		gp.s_x = std::min (std::max (gp.s_x, edge [1]), edge [0]);
+		gp.s_y = std::min (std::max (gp.s_y, edge [3]), edge [2]);
+		gp.s_z = std::min (std::max (gp.s_z, edge [5]), edge [4]);
 
 		// re-calculate positions
-		double gp_s_x_2 = pow (gp.s_x, 2.0);
-		double gp_s_y_2 = pow (gp.s_y, 2.0);
-		gp.r = sqrt (gp_s_x_2 + gp_s_y_2 + pow (gp.s_z, 2.0));
+		double gp_s_x_2_y_2 = pow (gp.s_x, 2.0) + pow (gp.s_y, 2.0);
+		gp.r = sqrt (gp_s_x_2_y_2 + pow (gp.s_z, 2.0));
 		if (gp.r != 0.0) {
 			gp.theta = asin (gp.s_z / gp.r) * 180.0 / pi;
-			gp.phi= acos (gp.s_x / sqrt (gp_s_x_2 + gp_s_y_2)) * 180.0 / pi;
+			gp.phi= acos (gp.s_x / sqrt (gp_s_x_2_y_2)) * 180.0 / pi;
 			if (gp.s_y < 0.0)
 				gp.phi = 360.0 - gp.phi;
 		}
@@ -118,19 +117,20 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		prev_s_x = s_x;
 		prev_s_y = s_y;
 		prev_s_z = s_z;
+		double s_x_2 = pow (s_x, 2.0);
+		double s_y_2 = pow (s_y, 2.0);
+		double s_z_2 = pow (s_z, 2.0);
+
 
 		// update of direct wave parameters
-		double s_x_2 = pow (s_x, 2.0);
-		double s_z_2 = pow (s_z, 2.0);
-		double r_2 = s_x_2 + pow (s_y, 2.0) + s_z_2;
+		double r_2 = s_x_2 + s_y_2 + s_z_2;
 		double r = sqrt (r_2);
 		double med_r = sqrt (s_x_2 + s_z_2);
+		theta_p = 0.0;
 		if (r > a_r && med_r != 0.0) {
 			theta_p = acos (s_x / med_r);
 			if (s_z < 0.0)
 				theta_p = - theta_p;			
-		} else{
-			theta_p = 0.0;
 		}
 
 		double r_cos_theta_o = s_y;											// because cos_theta_o = s_y / r
@@ -148,73 +148,60 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		if (a_r <= - r_cos_theta_o || a_r >= r)
 			distance_R = sqrt (a_2 + r_2 + 2.0 * a_r * r_cos_theta_o);
 		else
-			distance_R = sqrt (r_2 - a_2) + a_r * (pi - theta_o - theta_d);
+			distance_R = sqrt (r_2 - a_2) + a_r * ((pi - theta_o) - theta_d);
 
-		// level limiter 
 		double d_att = gp.d_att / -6.0;
 		double next_decay_L = 1.0 / std::max (pow (distance_L, d_att), min_dist);
 		double next_decay_R = 1.0 / std::max (pow (distance_R, d_att), min_dist);
 
+
 		// update of reflected waves parameters
-		valarray <double> v_next_cos_theta_o (6);
-		valarray <double> v_next_decay (6);
-		double ref = rangeParameter:: dB_to_ratio (gp.reflectance);
+		valarray <double> v_s_x {2.0 * edge [0] - s_x, 2.0 * edge [1] - s_x, s_x, s_x, s_x, s_x};
+		valarray <double> v_s_y {s_y, s_y, 2.0 * edge [2] - s_y, 2.0 * edge [3] - s_y, s_y, s_y};
+		valarray <double> v_s_z {s_z, s_z, s_z, s_z, 2.0 * edge [4] - s_z, 2.0 * edge [5] - s_z};
+		valarray <double> v_s_x_2 {pow (v_s_x [0], 2.0), pow (v_s_x [1], 2.0), s_x_2, s_x_2, s_x_2, s_x_2};
+		valarray <double> v_s_y_2 {s_y_2, s_y_2, pow (v_s_y [2], 2.0), pow (v_s_y [3], 2.0), s_y_2, s_y_2};
+		valarray <double> v_s_z_2 {s_z_2, s_z_2, s_z_2, s_z_2, pow (v_s_z [4], 2.0), pow (v_s_z [5], 2.0)};
+		valarray <double> v_s_x_2_z_2 = v_s_x_2 + v_s_z_2;
+		valarray <double> v_med_r = sqrt (v_s_x_2_z_2);
+		valarray <double> v_r = sqrt (v_s_x_2_z_2 + v_s_y_2);
 
-		v_X [0] = v_X [1] = v_X [3] = v_X [5] = s_x;
-		v_Y [0] = v_Y [2] = v_Y [4] = v_Y [5] = s_y;
-		v_X [2] = v_X [4] = v_Y [1] = v_Y [3] = s_z;
-		v_Z [0] = v_z [0] + s_z;
-		v_Z [1] = v_z [1] + s_y;
-		v_Z [2] = v_z [2] - s_x;
-		v_Z [3] = v_z [3] - s_y;
-		v_Z [4] = v_z [4] + s_x;
-		v_Z [5] = v_z [5] - s_z;
-
-		// update of specular reflections parameters
-		v_zdivZz = v_z / (v_z + v_Z);
-		v_x0 = v_X * v_zdivZz;
-		v_x0_2 = pow (v_x0, 2.0);
-		v_y0 = v_Y * v_zdivZz;
-		v_y0_2 = pow (v_y0, 2.0);
-		v_in_dist = sqrt (pow (v_x0 - v_X, 2.0) + pow (v_y0 - v_Y, 2.0) + pow (v_Z, 2.0));
-		v_ref_dist = sqrt (v_x0_2 + v_y0_2 + v_z_2);
-		v_dist = v_in_dist + v_ref_dist;
-		v_ref_ydir [0] = v_y0 [0];
-		v_ref_ydir [2] = v_y0 [2];
-		v_ref_ydir [4] = v_y0 [4];
-		v_ref_ydir [5] = v_y0 [5];
-		v_next_cos_theta_o = v_ref_ydir / v_ref_dist;
-
-		v_theta_p [0] = - acos (v_x0 [0] / sqrt (v_x0_2 [0] + v_z_2 [0]));
-		med_r = sqrt (v_x0_2 [1] + v_y0_2 [1]);
-		if (med_r != 0) {
-			v_theta_p [1] = v_theta_p [3] = acos (v_x0 [1] / med_r);
-			if (v_y0 [1] < 0.0) 
-				v_theta_p [1] = v_theta_p [3] = - v_theta_p [1];
-		} else {
-			v_theta_p [1] = v_theta_p [3] = 0.0;
+		for (int i = 0; i < 6; i++) {
+			if (v_med_r [i] != 0.0)
+				v_theta_p [i] = v_s_x [i] / v_med_r [i];
+			else
+				v_theta_p [i] = 1.0;
 		}
-		v_theta_p [2] = acos (v_z [2] / sqrt (v_x0_2 [2] + v_z_2 [2]));
-		if (v_x0 [2] < 0.0)
-			v_theta_p [2] = - v_theta_p [2];
-		v_theta_p [4] = acos (- v_z [4] / sqrt (v_x0_2 [4] + v_z_2 [4]));
-		if (v_x0 [4] < 0.0)
-			v_theta_p [4] = - v_theta_p [4];
-		v_theta_p [5] = acos (v_x0 [5] / sqrt (v_x0_2 [5] + v_z_2 [5]));
+		v_theta_p = acos (v_theta_p);
+		for (int i = 0; i < 6; i++) {
+			if (v_s_z [i] < 0.0)
+				v_theta_p [i] = - v_theta_p [i];
+		}
+
+		valarray <double> v_next_cos_theta_o = v_s_y / v_r;
+		valarray <double> v_near_side = a_r * v_next_cos_theta_o;
+		valarray <double> v_far_side = acos (v_next_cos_theta_o);
+		v_far_side = a_r * v_far_side;
+		v_far_side = a_r * pi / 2.0 - v_far_side;
 
 		for (int i = 0; i < 6; i++) {
 			if (v_next_cos_theta_o [i] >= 0.0) {
-				v_distance_L [i] = v_dist [i] - a_r * v_next_cos_theta_o [i];
-				v_distance_R [i] = v_dist [i] + a_r * (pi / 2.0 - acos (v_next_cos_theta_o [i]));
+				v_distance_L [i] = v_r [i] - v_near_side [i];
+				v_distance_R [i] = v_r [i] + v_far_side [i];
 			} else {
-				v_distance_L [i] = v_dist [i] + a_r * (acos (v_next_cos_theta_o [i]) - pi / 2.0);
-				v_distance_R [i] = v_dist [i] + a_r * v_next_cos_theta_o [i];
+				v_distance_L [i] = v_r [i] - v_far_side [i];
+				v_distance_R [i] = v_r [i] + v_near_side [i];
 			}
-			// level limiter
-			v_next_decay [i] = ref / std::max (pow (v_dist [i], d_att), min_dist);
 		}
+
+		valarray <double> v_next_decay = pow (v_r, d_att);
+		for (int i = 0; i < 6; i++)		
+			v_next_decay [i] = std::max (v_next_decay [i], min_dist);
+		double ref = rangeParameter:: dB_to_ratio (gp.reflectance);
+		v_next_decay = ref / v_next_decay;
+
 		// update of parameter for crosstalk canceller 
-		sin_phiL = sin (gp.phiL / 180.0 * pi);
+		sin_phiL = sin (gp.phiL * pi / 180.0);
 
 		// update of smoothing parameters
 		if (gp.reset) {
@@ -273,17 +260,12 @@ void SODSPparam:: nrt_param_update (struct GUI_param &gp, IParameterChanges* out
 	}
 
 	// update of reflected waves parameters
-	v_z [0] = gp.c_z;
-	v_z [1] = gp.c_y;
-	v_z [2] = gp.r_x - gp.c_x;
-	v_z [3] = gp.r_y - gp.c_y;
-	v_z [4] = gp.c_x;
-	v_z [5] = gp.r_z - gp.c_z;
-	v_z_2 = pow (v_z, 2.0);
-
-	// update of specular reflections parameters
-	v_ref_ydir [1] = - v_z [1];
-	v_ref_ydir [3] = v_z [3];
+	edge [0] = gp.r_x - gp.c_x;
+	edge [1] = - gp.c_x;
+	edge [2] = gp.r_y - gp.c_y;
+	edge [3] = - gp.c_y;
+	edge [4] = gp.r_z - gp.c_z;
+	edge [5] = - gp.c_z;
 }
 
 // parameters smoothing

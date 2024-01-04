@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2023 suzumushi
+// Copyright (c) 2021-2024 suzumushi
 //
-// 2023-11-23		SODSPparam.h
+// 2024-1-2		SODSPparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -60,31 +60,15 @@ public:
 private:
 	// non real-time parameters
 	double a_2 {a.def * a.def};
+	double v_limit {c.def * max_speed * frame_len / 44'100};
+	double edge [6];
 
 	// parameters for velocity limiter
 	double prev_s_x {0.0};
 	double prev_s_y {0.0};
 	double prev_s_z {0.0};
-	double v_limit {c.def * max_speed * frame_len / 44'100};
 
-	// per face parameters (real-time)
-	valarray <double> v_X {valarray <double> (6)};
-	valarray <double> v_Y {valarray <double> (6)};
-	valarray <double> v_Z {valarray <double> (6)};
-	valarray <double> v_zdivZz {valarray <double> (6)};
-	valarray <double> v_x0 {valarray <double> (6)};
-	valarray <double> v_x0_2 {valarray <double> (6)};
-	valarray <double> v_y0 {valarray <double> (6)};
-	valarray <double> v_y0_2 {valarray <double> (6)};
-	valarray <double> v_in_dist {valarray <double> (6)};
-	valarray <double> v_ref_dist {valarray <double> (6)};
-	valarray <double> v_dist {valarray <double> (6)};
-	valarray <double> v_ref_ydir {valarray <double> (6)};
-	// per face parameters (non real-time)
-	valarray <double> v_z {valarray <double> (6)};
-	valarray <double> v_z_2 {valarray <double> (6)};
-
-	// parameters for smoothing (real-time)
+	// parameters for smoothing
 	bool smoothing {false};					// smoothing mode
 	double delta_cos_theta_o {0.0};
 	double delta_decay_L {1.0};
