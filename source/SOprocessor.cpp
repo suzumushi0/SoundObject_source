@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2023 suzumushi
+// Copyright (c) 2021-2024 suzumushi
 //
-// 2023-11-26		SOprocessor.cpp
+// 2024-3-10		SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -10,9 +10,9 @@
 
 #include "SOprocessor.h"
 #include "SOcids.h"
+#include "SOconfig.h"
 
 #include "base/source/fstreamer.h"
-#include "pluginterfaces/vst/ivstparameterchanges.h"
 
 using namespace Steinberg;
 

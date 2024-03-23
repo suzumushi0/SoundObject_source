@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2023 suzumushi
+// Copyright (c) 2023-2024 suzumushi
 //
-// 2023-11-22		SOvst3editor.h
+// 2024-3-10		SOvst3editor.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -11,7 +11,6 @@
 #pragma once
 
 #include "vstgui4/vstgui/plugin-bindings/vst3editor.h"
-#include "SOparam.h"
 #include "SOXYPad.h"
 
 namespace VSTGUI {

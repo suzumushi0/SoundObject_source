@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2023 suzumushi
+// Copyright (c) 2023-2024 suzumushi
 //
-// 2023-11-25		SOvst3editor.cpp
+// 2024-3-10		SOvst3editor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -9,6 +9,7 @@
 //
 
 #include "SOvst3editor.h"
+#include "SOparam.h"
 
 namespace VSTGUI {
 

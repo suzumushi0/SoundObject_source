@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2023 suzumushi
+// Copyright (c) 2021-2024 suzumushi
 //
-// 2023-4-14		SOudsampling.h
+// 2024-3-10		SOudsampling.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -44,7 +44,7 @@ private:
 	TYPE IR (const int ir_at) const;							// Common IR lookup function
 	TYPE up_IR (const int ir_at, const int offset) const;		// IR lookup function for N > M
 	TYPE dn_IR (const int ir_at, const int m) const;			// IR lookup function for M > N
-	static TYPE IR_TBL [IR_CENTER + 1];							// Impulse response table
+	static inline TYPE IR_TBL [IR_CENTER + 1];					// Impulse response table
 	int IR_TBL_LEN {IR_LEN};									// Logical length of impulse response table
 	int TBL_OFFSET {0};											// IR lookup offset for N > M 
 
@@ -56,9 +56,6 @@ private:
 	int phase {0};												// IR lookup phase for polyphase decomposition
 	bool first_frame {true};									// The first frame after reset() or initialization
 };
-
-template <typename TYPE>
-TYPE SOudsampling <TYPE>:: IR_TBL [IR_CENTER + 1];
 
 template <typename TYPE>
 SOudsampling <TYPE>:: SOudsampling ()

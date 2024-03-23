@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2023 suzumushi
+// Copyright (c) 2021-2024 suzumushi
 //
-// 2023-4-14		SOpinna.h
+// 2024-3-21		SOpinna.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -207,7 +207,8 @@ TYPE SOpinna_scattering <TYPE>:: process (const TYPE xn)
 	if (smoothing) {
 		TYPE* ir = & IR [0];
 		TYPE* delta_ir = & delta_IR [0];
-		for (int i = 0; i < IR_LEN; i++)
+		int len = IR_LEN;					// for automatic vectorization
+		for (int i = 0; i < len; i++)
 			*ir++ += *delta_ir++;
 	}
 

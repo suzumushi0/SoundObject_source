@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2024 suzumushi
 //
-// 2024-1-3		SODSPparam.cpp
+// 2024-3-21		SODSPparam.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -9,6 +9,7 @@
 //
 
 #include "SODSPparam.h"
+#include "SOXYPad.h"
 
 
 namespace suzumushi {
@@ -58,8 +59,8 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		gp.s_z = std::min (std::max (gp.s_z, edge [5]), edge [4]);
 
 		// re-calculate positions
-		double gp_s_x_2_y_2 = pow (gp.s_x, 2.0) + pow (gp.s_y, 2.0);
-		gp.r = sqrt (gp_s_x_2_y_2 + pow (gp.s_z, 2.0));
+		double gp_s_x_2_y_2 = gp.s_x * gp.s_x + gp.s_y * gp.s_y;
+		gp.r = sqrt (gp_s_x_2_y_2 + gp.s_z * gp.s_z);
 		if (gp.r != 0.0) {
 			gp.theta = asin (gp.s_z / gp.r) * 180.0 / pi;
 			gp.phi= acos (gp.s_x / sqrt (gp_s_x_2_y_2)) * 180.0 / pi;
@@ -106,20 +107,24 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 		double s_y = gp.s_y;
 		double s_z = gp.s_z;
 		if (! gp.reset) {
-			double v = sqrt (pow (gp.s_x - prev_s_x, 2.0) + pow (gp.s_y - prev_s_y, 2.0) + pow (gp.s_z - prev_s_z, 2.0));
+			double d_s_x = s_x - prev_s_x;
+			double d_s_y = s_y - prev_s_y;
+			double d_s_z = s_z - prev_s_z;
+			double v = sqrt (d_s_x * d_s_x + d_s_y * d_s_y + d_s_z * d_s_z);
 			if (v > v_limit) {
-				s_x = (gp.s_x - prev_s_x) * v_limit / v + prev_s_x;
-				s_y = (gp.s_y - prev_s_y) * v_limit / v + prev_s_y;
-				s_z = (gp.s_z - prev_s_z) * v_limit / v + prev_s_z;
+				double cof = v_limit / v;
+				s_x = d_s_x * cof + prev_s_x;
+				s_y = d_s_y * cof + prev_s_y;
+				s_z = d_s_z * cof + prev_s_z;
 				gp.param_changed = true;
 			} 
 		}
 		prev_s_x = s_x;
 		prev_s_y = s_y;
 		prev_s_z = s_z;
-		double s_x_2 = pow (s_x, 2.0);
-		double s_y_2 = pow (s_y, 2.0);
-		double s_z_2 = pow (s_z, 2.0);
+		double s_x_2 = s_x * s_x;
+		double s_y_2 = s_y * s_y;
+		double s_z_2 = s_z * s_z;
 
 
 		// update of direct wave parameters
@@ -156,33 +161,41 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 
 
 		// update of reflected waves parameters
-		valarray <double> v_s_x {2.0 * edge [0] - s_x, 2.0 * edge [1] - s_x, s_x, s_x, s_x, s_x};
-		valarray <double> v_s_y {s_y, s_y, 2.0 * edge [2] - s_y, 2.0 * edge [3] - s_y, s_y, s_y};
-		valarray <double> v_s_z {s_z, s_z, s_z, s_z, 2.0 * edge [4] - s_z, 2.0 * edge [5] - s_z};
-		valarray <double> v_s_x_2 {pow (v_s_x [0], 2.0), pow (v_s_x [1], 2.0), s_x_2, s_x_2, s_x_2, s_x_2};
-		valarray <double> v_s_y_2 {s_y_2, s_y_2, pow (v_s_y [2], 2.0), pow (v_s_y [3], 2.0), s_y_2, s_y_2};
-		valarray <double> v_s_z_2 {s_z_2, s_z_2, s_z_2, s_z_2, pow (v_s_z [4], 2.0), pow (v_s_z [5], 2.0)};
-		valarray <double> v_s_x_2_z_2 = v_s_x_2 + v_s_z_2;
-		valarray <double> v_med_r = sqrt (v_s_x_2_z_2);
-		valarray <double> v_r = sqrt (v_s_x_2_z_2 + v_s_y_2);
+		double v_s_x [] {2.0 * edge [0] - s_x, 2.0 * edge [1] - s_x, s_x, s_x, s_x, s_x};
+		double v_s_y [] {s_y, s_y, 2.0 * edge [2] - s_y, 2.0 * edge [3] - s_y, s_y, s_y};
+		double v_s_z [] {s_z, s_z, s_z, s_z, 2.0 * edge [4] - s_z, 2.0 * edge [5] - s_z};
+		double v_s_x_2 [] {v_s_x [0] * v_s_x [0], v_s_x [1] * v_s_x [1], s_x_2, s_x_2, s_x_2, s_x_2};
+		double v_s_y_2 [] {s_y_2, s_y_2, v_s_y [2] * v_s_y [2], v_s_y [3] * v_s_y [3], s_y_2, s_y_2};
+		double v_s_z_2 [] {s_z_2, s_z_2, s_z_2, s_z_2, v_s_z [4] * v_s_z [4], v_s_z [5] * v_s_z [5]};
+
+		double v_s_x_2_z_2 [6];
+		for (int i = 0; i < 6; i++)
+			v_s_x_2_z_2 [i] = v_s_x_2 [i] + v_s_z_2 [i];
+		double v_med_r [6];
+		for (int i = 0; i < 6; i++)
+			v_med_r [i] = sqrt (v_s_x_2_z_2 [i]);
 
 		for (int i = 0; i < 6; i++) {
 			if (v_med_r [i] != 0.0)
-				v_theta_p [i] = v_s_x [i] / v_med_r [i];
+				v_theta_p [i] = acos (v_s_x [i] / v_med_r [i]);
 			else
-				v_theta_p [i] = 1.0;
-		}
-		v_theta_p = acos (v_theta_p);
-		for (int i = 0; i < 6; i++) {
+				v_theta_p [i] = 0.0;
 			if (v_s_z [i] < 0.0)
 				v_theta_p [i] = - v_theta_p [i];
 		}
 
-		valarray <double> v_next_cos_theta_o = v_s_y / v_r;
-		valarray <double> v_near_side = a_r * v_next_cos_theta_o;
-		valarray <double> v_far_side = acos (v_next_cos_theta_o);
-		v_far_side = a_r * v_far_side;
-		v_far_side = a_r * pi / 2.0 - v_far_side;
+		double v_r [6];
+		for (int i = 0; i < 6; i++)
+			v_r [i] = sqrt (v_s_x_2_z_2 [i] + v_s_y_2 [i]);
+		double v_next_cos_theta_o [6];
+		for (int i = 0; i < 6; i++)
+			v_next_cos_theta_o [i] = v_s_y [i] / v_r [i];
+		double v_near_side [6];
+		for (int i = 0; i < 6; i++)
+			v_near_side [i] = a_r * v_next_cos_theta_o [i];
+		double v_far_side [6];
+		for (int i = 0; i < 6; i++)
+			v_far_side [i] = a_r * (pi / 2.0 - acos (v_next_cos_theta_o [i]));
 
 		for (int i = 0; i < 6; i++) {
 			if (v_next_cos_theta_o [i] >= 0.0) {
@@ -194,11 +207,11 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			}
 		}
 
-		valarray <double> v_next_decay = pow (v_r, d_att);
-		for (int i = 0; i < 6; i++)		
-			v_next_decay [i] = std::max (v_next_decay [i], min_dist);
 		double ref = rangeParameter:: dB_to_ratio (gp.reflectance);
-		v_next_decay = ref / v_next_decay;
+		double v_next_decay [6];
+		for (int i = 0; i < 6; i++)		
+			v_next_decay [i] = ref / std::max (pow (v_r [i], d_att), min_dist);
+
 
 		// update of parameter for crosstalk canceller 
 		sin_phiL = sin (gp.phiL * pi / 180.0);
@@ -208,14 +221,18 @@ void SODSPparam:: rt_param_update (struct GUI_param &gp, IParameterChanges* outP
 			cos_theta_o = next_cos_theta_o;
 			decay_L = next_decay_L;
 			decay_R = next_decay_R;
-			v_cos_theta_o = v_next_cos_theta_o;
-			v_decay = v_next_decay;
+			for (int i = 0; i < 6; i++) {
+				v_cos_theta_o [i] = v_next_cos_theta_o [i];
+				v_decay [i] = v_next_decay [i];
+			}
 		} else {
 			delta_cos_theta_o = (next_cos_theta_o - cos_theta_o) / frame_len;
 			delta_decay_L = (next_decay_L - decay_L) / frame_len;
 			delta_decay_R = (next_decay_R - decay_R) / frame_len;
-			v_delta_cos_theta_o = (v_next_cos_theta_o - v_cos_theta_o) / frame_len;
-			v_delta_decay = (v_next_decay - v_decay) / frame_len;
+			for (int i = 0; i < 6; i++) {
+				v_delta_cos_theta_o [i] = (v_next_cos_theta_o [i] - v_cos_theta_o [i]) / frame_len;
+				v_delta_decay [i] = (v_next_decay [i] - v_decay [i]) / frame_len;
+			}
 		}
 		gp.reset = false;
 	}
@@ -227,7 +244,7 @@ void SODSPparam:: nrt_param_update (struct GUI_param &gp, IParameterChanges* out
 	inv_cT = sampleRate / gp.c;
 	v_limit = max_speed * frame_len / inv_cT;
 	a_r = gp.a / 1'000.0;		// [mm] to [m]
-	a_2 = pow (a_r, 2.0);
+	a_2 = a_r * a_r;
 
 	// parameters range check
 	if (gp.r_x >= max_side_len / 2.0 + min_dist)
@@ -275,8 +292,11 @@ void SODSPparam:: param_smoothing ()
 		cos_theta_o += delta_cos_theta_o;
 		decay_L += delta_decay_L;
 		decay_R += delta_decay_R;
-		v_cos_theta_o += v_delta_cos_theta_o;
-		v_decay += v_delta_decay;
+		for (int i = 0; i < 6; i++) {
+			v_cos_theta_o [i] += v_delta_cos_theta_o [i];
+			v_decay [i] += v_delta_decay [i];
+		}
+
 	}
 }
 

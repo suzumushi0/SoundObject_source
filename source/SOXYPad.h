@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2023 suzumushi
+// Copyright (c) 2023-2024 suzumushi
 //
-// 2023-11-25		SOXYPad.h
+// 2024-3-10		SOXYPad.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -12,8 +12,8 @@
 
 #include "vstgui4/vstgui/lib/controls/cxypad.h"
 
-#include "SOconfig.h"
 #include "SOparam.h"
+
 
 namespace VSTGUI {
 
