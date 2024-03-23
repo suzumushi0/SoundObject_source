@@ -1,4 +1,11 @@
 cmake_minimum_required(VERSION 3.14.0)
+
+# suzumushi
+option(SMTG_ENABLE_VST3_PLUGIN_EXAMPLES "Enable VST 3 Plug-in Examples" OFF)
+option(SMTG_ENABLE_VST3_HOSTING_EXAMPLES "Enable VST 3 Hosting Examples" OFF)
+unset(SMTG_CREATE_PLUGIN_LINK)
+set (SMTG_CXX_STANDARD "20")
+
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13 CACHE STRING "")
 
 set(vst3sdk_SOURCE_DIR D:/VST/VST_SDK/vst3sdk)
@@ -10,13 +17,9 @@ project(SoundObject
 	# This is your plug-in version number. Change it here only.
 	# Version number symbols usable in C++ can be found in
 	# source/version.h and ${PROJECT_BINARY_DIR}/projectversion.h.
-	VERSION 3.1.0.0 
+	VERSION 3.1.1.0 
 	DESCRIPTION "SoundObject"
 )
-
-# suzumushi
-unset(SMTG_CREATE_PLUGIN_LINK)
-set (SMTG_CXX_STANDARD "20")
 
 set(SMTG_VSTGUI_ROOT "${vst3sdk_SOURCE_DIR}")
 
