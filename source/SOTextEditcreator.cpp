@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2023 suzumushi
+// Copyright (c) 2023-2025 suzumushi
 //
-// 2023-11-24		SOTextEditcreator.cpp
+// 2025-3-19		SOTextEditcreator.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -48,7 +48,7 @@ struct SOTextEditCreator: ViewCreatorAdapter
 	}
 };
 
-SOTextEditCreator __gHVLinesCreator;
+SOTextEditCreator __gSOTextEditCreator;
 
 
 } // namespace UIViewCreator

@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2023 suzumushi
+// Copyright (c) 2023-2025 suzumushi
 //
-// 2023-11-25		SOXYPadcreator.cpp
+// 2025-3-19		SOXYPadcreator.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -48,7 +48,7 @@ struct SOXYPadCreator: ViewCreatorAdapter
 	}
 };
 
-SOXYPadCreator __gHVLinesCreator;
+SOXYPadCreator __gSOXYPadCreator;
 
 
 } // namespace UIViewCreator
