@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2023 suzumushi
+// Copyright (c) 2021-2025 suzumushi
 //
-// 2023-11-27		SOparam.h
+// 2025-8-28		SOparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -264,6 +264,8 @@ enum class HRIR_L {
 	YORK_KU100,
 	YORK_KEMAR,
 	AACHEN_KEMAR,
+	ML_HRIR_1,
+	ML_HRIR_2,
 	LIST_LEN
 };
 
