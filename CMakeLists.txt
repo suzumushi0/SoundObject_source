@@ -7,8 +7,7 @@ option(SMTG_CREATE_PLUGIN_LINK "" OFF)
 set(SMTG_CXX_STANDARD 20 CACHE STRING "")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 source_group("Header Files/Aachen_KEMAR" REGULAR_EXPRESSION "source/Aachen_KEMAR/*")
-source_group("Header Files/ML_HRIR_1" REGULAR_EXPRESSION "source/ML_HRIR_1/*")
-source_group("Header Files/ML_HRIR_2" REGULAR_EXPRESSION "source/ML_HRIR_2/*")
+source_group("Header Files/ML_GHRIR" REGULAR_EXPRESSION "source/ML_GHRIR/*")
 source_group("Header Files/York_KEMAR" REGULAR_EXPRESSION "source/York_KEMAR/*")
 source_group("Header Files/York_KU100" REGULAR_EXPRESSION "source/York_KU100/*")
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13 CACHE STRING "")
@@ -22,7 +21,7 @@ project(SoundObject
 	# This is your plug-in version number. Change it here only.
 	# Version number symbols usable in C++ can be found in
 	# source/version.h and ${PROJECT_BINARY_DIR}/projectversion.h.
-	VERSION 4.0.0.0 
+	VERSION 4.1.0.0 
 	DESCRIPTION "SoundObject"
 )
 
@@ -38,18 +37,12 @@ smtg_add_vst3plugin(SoundObject
 	source/Aachen_KEMAR/IR_TBL_R_48.h
 	source/Aachen_KEMAR/IR_TBL_L_96.h
 	source/Aachen_KEMAR/IR_TBL_R_96.h
-	source/ML_HRIR_1/IR_TBL_L_44.h
-	source/ML_HRIR_1/IR_TBL_R_44.h
-	source/ML_HRIR_1/IR_TBL_L_48.h
-	source/ML_HRIR_1/IR_TBL_R_48.h
-	source/ML_HRIR_1/IR_TBL_L_96.h
-	source/ML_HRIR_1/IR_TBL_R_96.h
-	source/ML_HRIR_2/IR_TBL_L_44.h
-	source/ML_HRIR_2/IR_TBL_R_44.h
-	source/ML_HRIR_2/IR_TBL_L_48.h
-	source/ML_HRIR_2/IR_TBL_R_48.h
-	source/ML_HRIR_2/IR_TBL_L_96.h
-	source/ML_HRIR_2/IR_TBL_R_96.h
+	source/ML_GHRIR/IR_TBL_L_44.h
+	source/ML_GHRIR/IR_TBL_R_44.h
+	source/ML_GHRIR/IR_TBL_L_48.h
+	source/ML_GHRIR/IR_TBL_R_48.h
+	source/ML_GHRIR/IR_TBL_L_96.h
+	source/ML_GHRIR/IR_TBL_R_96.h
 	source/York_KEMAR/IR_TBL_L_44.h
 	source/York_KEMAR/IR_TBL_R_44.h
 	source/York_KEMAR/IR_TBL_L_48.h
