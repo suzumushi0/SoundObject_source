@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2025 suzumushi
+// Copyright (c) 2021-2026 suzumushi
 //
-// 2025-8-28		SOparam.h
+// 2026-1-28		SOparam.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -264,8 +264,7 @@ enum class HRIR_L {
 	YORK_KU100,
 	YORK_KEMAR,
 	AACHEN_KEMAR,
-	ML_HRIR_1,
-	ML_HRIR_2,
+	ML_GHRIR,
 	LIST_LEN
 };
 
@@ -363,7 +362,7 @@ struct GUI_param {
 		c_x = suzumushi::c_x.def;
 		c_y = suzumushi::c_y.def;
 		c_z = suzumushi::c_z.def;
-		hrir = (int32) HRIR_L:: YORK_KU100;
+		hrir = (int32) HRIR_L:: ML_GHRIR;
 		output = (int32) OUTPUT_L:: COMBINED_WAVES;
 		format = (int32) FORMAT_L:: BINAURAL;
 		bypass = suzumushi::bypass.def;

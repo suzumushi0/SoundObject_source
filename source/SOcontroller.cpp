@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2025 suzumushi
+// Copyright (c) 2021-2026 suzumushi
 //
-// 2025-9-13		SOcontroller.cpp
+// 2026-1-27		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -182,8 +182,7 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 	hrir_param -> appendString (STR16 ("Univ. of York, SADIE II KU 100 HRIR"));
 	hrir_param -> appendString (STR16 ("Univ. of York, SADIE II KEMAR HRIR"));
 	hrir_param -> appendString (STR16 ("Aachen Univ., High-resolution KEMAR HRIR"));
-	hrir_param -> appendString (STR16 ("Machine learning generated HRIR 1"));
-	hrir_param -> appendString (STR16 ("Machine learning generated HRIR 2"));
+	hrir_param -> appendString (STR16 ("Machine learning generated Generalized HRIR"));
 	parameters.addParameter (hrir_param);
 
 	// output: output selector

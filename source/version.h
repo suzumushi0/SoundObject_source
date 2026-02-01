@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2025 suzumushi
+// Copyright (c) 2021-2026 suzumushi
 //
-// 2025-8-29		version.h
+// 2026-1-27		version.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -22,5 +22,5 @@
 #define stringFileDescription	"SoundObject VST3"
 #endif
 #define stringCompanyName		"suzumushi\0"
-#define stringLegalCopyright	"Copyright(c) 2021-2025 suzumushi."
+#define stringLegalCopyright	"Copyright(c) 2021-2026 suzumushi."
 #define stringLegalTrademarks	"VST is a trademark of Steinberg Media Technologies GmbH"

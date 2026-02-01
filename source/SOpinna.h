@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2025 suzumushi
+// Copyright (c) 2021-2026 suzumushi
 //
-// 2024-8-29		SOpinna.h
+// 2026-1-27		SOpinna.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -51,8 +51,7 @@ private:
 	const static IR_DATA <TYPE, 15> Y1_IR;	// IR data set of the KU 100 derived from Univ. of York, SADIE II
 	const static IR_DATA <TYPE, 15> YK_IR;	// IR data set of the KEMAR derived from Univ. of York, SADIE II
 	const static IR_DATA <TYPE, 3>  AK_IR;	// IR data set of the KEMAR derived from Aachen Univ., High-resolution HRTF
-	const static IR_DATA <TYPE, 3>  ML_IR1;	// Machine learning generated IR data set 1
-	const static IR_DATA <TYPE, 3>  ML_IR2;	// Machine learning generated IR data set 2
+	const static IR_DATA <TYPE, 3>  ML_IR;	// Machine learning generated GIR data set
 	const static int angular_resolution [(int32)HRIR_L::LIST_LEN];	// angular resolution table
 
 	const TYPE* IR_TBL [(int32)HRIR_L::LIST_LEN];	// pointer to IR_TBL
@@ -118,36 +117,19 @@ const IR_DATA <TYPE, 3> SOpinna_scattering <TYPE>:: AK_IR {
 };
 
 template <typename TYPE>
-const IR_DATA <TYPE, 3> SOpinna_scattering <TYPE>:: ML_IR1 {
+const IR_DATA <TYPE, 3> SOpinna_scattering <TYPE>:: ML_IR {
 	{
-	#include "ML_HRIR_1/IR_TBL_L_44.h"
+	#include "ML_GHRIR/IR_TBL_L_44.h"
 	}, {
-	#include "ML_HRIR_1/IR_TBL_R_44.h"
+	#include "ML_GHRIR/IR_TBL_R_44.h"
 	}, {
-	#include "ML_HRIR_1/IR_TBL_L_48.h"
+	#include "ML_GHRIR/IR_TBL_L_48.h"
 	}, {
-	#include "ML_HRIR_1/IR_TBL_R_48.h"
+	#include "ML_GHRIR/IR_TBL_R_48.h"
 	}, {
-	#include "ML_HRIR_1/IR_TBL_L_96.h"
+	#include "ML_GHRIR/IR_TBL_L_96.h"
 	}, {
-	#include "ML_HRIR_1/IR_TBL_R_96.h"
-	}
-};
-
-template <typename TYPE>
-const IR_DATA <TYPE, 3> SOpinna_scattering <TYPE>:: ML_IR2 {
-	{
-	#include "ML_HRIR_2/IR_TBL_L_44.h"
-	}, {
-	#include "ML_HRIR_2/IR_TBL_R_44.h"
-	}, {
-	#include "ML_HRIR_2/IR_TBL_L_48.h"
-	}, {
-	#include "ML_HRIR_2/IR_TBL_R_48.h"
-	}, {
-	#include "ML_HRIR_2/IR_TBL_L_96.h"
-	}, {
-	#include "ML_HRIR_2/IR_TBL_R_96.h"
+	#include "ML_GHRIR/IR_TBL_R_96.h"
 	}
 };
 
@@ -156,8 +138,7 @@ const int SOpinna_scattering <TYPE>:: angular_resolution [(int32)HRIR_L::LIST_LE
 	Y1_IR.angular_resolution,
 	YK_IR.angular_resolution,	
 	AK_IR.angular_resolution,
-	ML_IR1.angular_resolution,
-	ML_IR2.angular_resolution
+	ML_IR.angular_resolution
 };
 
 template <typename TYPE>
@@ -168,14 +149,12 @@ void SOpinna_scattering <TYPE>:: setup_SR (const int SR, const bool CH)
 			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.L_44 [0][0];
 			IR_TBL [(int32)HRIR_L::YORK_KEMAR]	 = &YK_IR.L_44 [0][0];
 			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.L_44 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_1] = &ML_IR1.L_44 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_2] = &ML_IR2.L_44 [0][0];
+			IR_TBL [(int32)HRIR_L::ML_GHRIR] = &ML_IR.L_44 [0][0];
 		} else {
 			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.R_44 [0][0];
 			IR_TBL [(int32)HRIR_L::YORK_KEMAR]   = &YK_IR.R_44 [0][0];
 			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.R_44 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_1] = &ML_IR1.R_44 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_2] = &ML_IR2.R_44 [0][0];
+			IR_TBL [(int32)HRIR_L::ML_GHRIR] = &ML_IR.R_44 [0][0];
 		}
 		IR_LEN = IR_44_LEN;
 	} else if (SR == 48'000) {
@@ -183,14 +162,12 @@ void SOpinna_scattering <TYPE>:: setup_SR (const int SR, const bool CH)
 			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.L_48 [0][0];
 			IR_TBL [(int32)HRIR_L::YORK_KEMAR]	 = &YK_IR.L_48 [0][0];
 			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.L_48 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_1] = &ML_IR1.L_48 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_2] = &ML_IR2.L_48 [0][0];
+			IR_TBL [(int32)HRIR_L::ML_GHRIR] = &ML_IR.L_48 [0][0];
 		} else {
 			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.R_48 [0][0];
 			IR_TBL [(int32)HRIR_L::YORK_KEMAR]   = &YK_IR.R_48 [0][0];
 			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.R_48 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_1] = &ML_IR1.R_48 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_2] = &ML_IR2.R_48 [0][0];
+			IR_TBL [(int32)HRIR_L::ML_GHRIR] = &ML_IR.R_48 [0][0];
 		}
 		IR_LEN = IR_48_LEN;
 	} else {
@@ -198,14 +175,12 @@ void SOpinna_scattering <TYPE>:: setup_SR (const int SR, const bool CH)
 			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.L_96 [0][0];
 			IR_TBL [(int32)HRIR_L::YORK_KEMAR]	 = &YK_IR.L_96 [0][0];
 			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.L_96 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_1] = &ML_IR1.L_96 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_2] = &ML_IR2.L_96 [0][0];
+			IR_TBL [(int32)HRIR_L::ML_GHRIR] = &ML_IR.L_96 [0][0];
 		} else {
 			IR_TBL [(int32)HRIR_L::YORK_KU100]	 = &Y1_IR.R_96 [0][0];
 			IR_TBL [(int32)HRIR_L::YORK_KEMAR]   = &YK_IR.R_96 [0][0];
 			IR_TBL [(int32)HRIR_L::AACHEN_KEMAR] = &AK_IR.R_96 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_1] = &ML_IR1.R_96 [0][0];
-			IR_TBL [(int32)HRIR_L::ML_HRIR_2] = &ML_IR2.R_96 [0][0];
+			IR_TBL [(int32)HRIR_L::ML_GHRIR] = &ML_IR.R_96 [0][0];
 		}
 		IR_LEN = IR_96_LEN;
 	}
