@@ -21,7 +21,7 @@ project(SoundObject
 	# This is your plug-in version number. Change it here only.
 	# Version number symbols usable in C++ can be found in
 	# source/version.h and ${PROJECT_BINARY_DIR}/projectversion.h.
-	VERSION 4.1.0.0 
+	VERSION 4.1.1.0 
 	DESCRIPTION "SoundObject"
 )
 
