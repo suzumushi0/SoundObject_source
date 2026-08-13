@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2026 suzumushi
 //
-// 2026-1-27		SOcontroller.cpp
+// 2026-8-11		SOcontroller.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -98,9 +98,9 @@ tresult PLUGIN_API SoundObjectController:: initialize (FUnknown* context)
 	reflectance_param -> setPrecision (precision1);
 	parameters.addParameter (reflectance_param);
 
-	// fc: LPF cut-off frequency [KHz]
+	// fc: LPF cut-off frequency [kHz]
 	Vst::InfLogTaperParameter* fc_param = new Vst::InfLogTaperParameter (
-		STR16 ("Cut-off frequency"), fc.tag, STR16 ("KHz"),
+		STR16 ("Cut-off frequency"), fc.tag, STR16 ("kHz"),
 		fc.min, fc.max, fc.def, fc.steps, fc.flags);
 	fc_param -> setPrecision (precision1);
 	parameters.addParameter (fc_param);

@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2021-2026 suzumushi
 //
-// 2026-1-27		SOpinna.h
+// 2026-8-11		SOpinna.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -24,7 +24,7 @@ namespace suzumushi {
 constexpr bool L_CH {true};
 constexpr bool R_CH {false};
 
-constexpr int IR_44_LEN {22};
+constexpr int IR_44_LEN {23};
 constexpr int IR_48_LEN {24};
 constexpr int IR_96_LEN {48};
 constexpr int MAX_IR_LEN {IR_96_LEN};

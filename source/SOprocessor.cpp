@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2025 suzumushi
+// Copyright (c) 2021-2026 suzumushi
 //
-// 2025-3-20		SOprocessor.cpp
+// 2026-8-12	SOprocessor.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -124,22 +124,35 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 		return kResultOk;
 	}
 
-	Vst::Sample32* in = data.inputs[0].channelBuffers32[0];
-	Vst::Sample32* out_L = data.outputs[0].channelBuffers32[0];
-	Vst::Sample32* out_R = data.outputs[0].channelBuffers32[1];
+	Vst::Sample32* in32 = data.inputs [0].channelBuffers32 [0];
+	Vst::Sample32* out32_L = data.outputs [0].channelBuffers32 [0];
+	Vst::Sample32* out32_R = data.outputs [0].channelBuffers32 [1];
+	Vst::Sample64* in64 = data.inputs [0].channelBuffers64 [0];
+	Vst::Sample64* out64_L = data.outputs [0].channelBuffers64 [0];
+	Vst::Sample64* out64_R = data.outputs [0].channelBuffers64 [1];
 
 	if (gp.bypass) {
 		// bypass mode
-		if (data.inputs[0].silenceFlags == 0)
+		if (data.inputs[0].silenceFlags == 0) {
 			// all silenceFlags are false
-			for (int32 i = 0; i < data.numSamples; i++)
-				*out_L++ = *out_R++ = *in++;
-		else
-			// some silenceFlags are true
-			for (int32 i = 0; i < data.numSamples; i++) {
-				*out_L++ = *out_R++ = 0.0;
-				data.outputs[0].silenceFlags = data.inputs[0].silenceFlags;
+			if (data.symbolicSampleSize == kSample32) {
+				for (int32 i = 0; i < data.numSamples; i++)
+					*out32_L++ = *out32_R++ = *in32++;
+			} else {
+				for (int32 i = 0; i < data.numSamples; i++)
+					*out64_L++ = *out64_R++ = *in64++;
 			}
+		} else {
+			// some silenceFlags are true
+			data.outputs[0].silenceFlags = data.inputs[0].silenceFlags;
+			if (data.symbolicSampleSize == kSample32) {
+				for (int32 i = 0; i < data.numSamples; i++)
+					*out32_L++ = *out32_R++ = 0.0;
+			} else {
+				for (int32 i = 0; i < data.numSamples; i++)
+					*out64_L++ = *out64_R++ = 0.0;
+			}
+		}
 	} else {
 		// DSP mode
 		for (int32 i = 0; i < data.numSamples; i++) {				
@@ -162,8 +175,13 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			dp.param_smoothing ();
 			double d_ud_L, d_ud_R;
 			if (data.inputs[0].silenceFlags == 0) {
-				d_ud_L = up_down_sampling_dL.process (*in, dp.decay_L);
-				d_ud_R = up_down_sampling_dR.process (*in, dp.decay_R);
+				if (data.symbolicSampleSize == kSample32) {
+					d_ud_L = up_down_sampling_dL.process (*in32, dp.decay_L);
+					d_ud_R = up_down_sampling_dR.process (*in32, dp.decay_R);
+				} else {
+					d_ud_L = up_down_sampling_dL.process (*in64, dp.decay_L);
+					d_ud_R = up_down_sampling_dR.process (*in64, dp.decay_R);
+				}
 			} else {
 				d_ud_L = up_down_sampling_dL.process (0.0, dp.decay_L);
 				d_ud_R = up_down_sampling_dR.process (0.0, dp.decay_R);
@@ -177,8 +195,13 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			for (int i = 0; i < 6; i++) {
 				double r_ud_L, r_ud_R;
 				if (data.inputs[0].silenceFlags == 0) {
-					r_ud_L = up_down_sampling_rL [i].process (*in, dp.v_decay [i]);
-					r_ud_R = up_down_sampling_rR [i].process (*in, dp.v_decay [i]);
+					if (data.symbolicSampleSize == kSample32) {
+						r_ud_L = up_down_sampling_rL [i].process (*in32, dp.v_decay [i]);
+						r_ud_R = up_down_sampling_rR [i].process (*in32, dp.v_decay [i]);
+					} else {
+						r_ud_L = up_down_sampling_rL [i].process (*in64, dp.v_decay [i]);
+						r_ud_R = up_down_sampling_rR [i].process (*in64, dp.v_decay [i]);
+					}
 				} else {
 					r_ud_L = up_down_sampling_rL [i].process (0.0, dp.v_decay [i]);
 					r_ud_R = up_down_sampling_rR [i].process (0.0, dp.v_decay [i]);
@@ -190,7 +213,10 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			}
 			r_out_L = LPF_L.process (r_out_L);
 			r_out_R = LPF_R.process (r_out_R);
-			in++;
+			if (data.symbolicSampleSize == kSample32)
+				in32++;
+			else
+				in64++;
 			switch (gp.output) {
 				case (int32) OUTPUT_L:: COMBINED_WAVES:
 					b_out_L = d_out_L + r_out_L;
@@ -218,11 +244,21 @@ tresult PLUGIN_API SoundObjectProcessor:: process (Vst::ProcessData& data)
 			xtalk_canceller_L.process (b_out_L, dp.sin_phiL, para_L, cross_L);
 			xtalk_canceller_R.process (b_out_R, dp.sin_phiL, para_R, cross_R);
 			if (gp.format == (int32) FORMAT_L:: BINAURAL) {
-				*out_L++ = b_out_L;
-				*out_R++ = b_out_R;
+				if (data.symbolicSampleSize == kSample32) {
+					*out32_L++ = b_out_L;
+					*out32_R++ = b_out_R;
+				} else {
+					*out64_L++ = b_out_L;
+					*out64_R++ = b_out_R;
+				}
 			} else {	// TRANSAURAL
-				*out_L++ = para_L + cross_R;
-				*out_R++ = para_R + cross_L;
+				if (data.symbolicSampleSize == kSample32) {
+					*out32_L++ = para_L + cross_R;
+					*out32_R++ = para_R + cross_L;
+				} else {
+					*out64_L++ = para_L + cross_R;
+					*out64_R++ = para_R + cross_L;
+				}	
 			}
 			unprocessed_len--;
 		}
@@ -245,8 +281,8 @@ tresult PLUGIN_API SoundObjectProcessor:: canProcessSampleSize (int32 symbolicSa
 		return kResultTrue;
 
 	// disable the following comment if your processing support kSample64
-	/* if (symbolicSampleSize == Vst::kSample64)
-		return kResultTrue; */
+	if (symbolicSampleSize == Vst::kSample64)
+		return kResultTrue;
 
 	return (kResultFalse);
 }
@@ -258,7 +294,7 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 	IBStreamer streamer (state, kLittleEndian);
 	
 	// suzumushi:
-	if (gp_load.param_changed == true)
+	if (set_param.load (std::memory_order_relaxed))
 		return (kResultFalse);
 
 	if (streamer.readDouble (gp_load.s_x) == true) {
@@ -322,7 +358,7 @@ tresult PLUGIN_API SoundObjectProcessor:: setState (IBStream* state)
 	if (streamer.readDouble (gp_load.d_att) == false)
 		gp_load.d_att = d_att.def;
 
-	gp_load.param_changed = true;
+	set_param.store (true, std::memory_order_release);
 
 	return (kResultOk);
 }
@@ -400,7 +436,7 @@ tresult PLUGIN_API SoundObjectProcessor:: getState (IBStream* state)
 
 void SoundObjectProcessor:: gui_param_loading ()
 {
-	if (gp_load.param_changed) {
+	if (set_param.load (std::memory_order_acquire)) {
 		gp.s_x = gp_load.s_x;
 		gp.s_y = gp_load.s_y;
 		gp.s_z = gp_load.s_z;
@@ -428,7 +464,7 @@ void SoundObjectProcessor:: gui_param_loading ()
 		gp.format = gp_load.format;
 		gp.bypass = gp_load.bypass;
 
-		gp_load.param_changed = false;
+		set_param.store (false, std::memory_order_relaxed);
 		reset ();
 	}
 }

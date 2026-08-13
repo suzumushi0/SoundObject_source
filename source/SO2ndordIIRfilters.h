@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2024 suzumushi
+// Copyright (c) 2021-2026 suzumushi
 //
-// 2024-3-10		SO2ndordIIRfilters.h
+// 2026-8-11		SO2ndordIIRfilters.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -40,7 +40,7 @@ TYPE SO2ndordIIRfilter <TYPE>:: process (const TYPE xn)
 template <typename TYPE>
 inline void SO2ndordIIRfilter <TYPE>:: reset ()
 {
-	za [0] = za [1] = zb [0] = zb [0] = 0.0;
+	za [0] = za [1] = zb [0] = zb [1] = 0.0;
 }
 
 

@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2021-2024 suzumushi
+// Copyright (c) 2021-2026 suzumushi
 //
-// 2024-3-10		SOprocessor.h
+// 2026-8-12	SOprocessor.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -13,6 +13,7 @@
 #include "public.sdk/source/vst/vstaudioeffect.h"
 
 // suzumushi: 
+#include <atomic>
 #include "SOparam.h"
 #include "SODSPparam.h"
 #include "SOudsampling.h"
@@ -69,6 +70,7 @@ private:
 	// GUI and host facing parameters
 	struct GUI_param gp;
 	struct GUI_param gp_load;						// for setState ()
+	std::atomic<bool> set_param {false};			// for setState ()
 
 	// DSP facing parameters
 	SODSPparam dp; 
