@@ -3,22 +3,22 @@
 		"version": "1",
 		"bitmaps": {
 			"about": {
-				"path": "D:\\VST\\SoundObject\\resource\\about.png"
+				"path": "C:\\D\\Repos\\SoundObject\\resource\\about.png"
 			},
 			"handle": {
-				"path": "D:\\VST\\SoundObject\\resource\\handle.png"
+				"path": "C:\\D\\Repos\\SoundObject\\resource\\handle.png"
 			},
 			"line": {
-				"path": "D:\\VST\\SoundObject\\resource\\line.png"
+				"path": "C:\\D\\Repos\\SoundObject\\resource\\line.png"
 			},
 			"slider": {
-				"path": "D:\\VST\\SoundObject\\resource\\slider.png"
+				"path": "C:\\D\\Repos\\SoundObject\\resource\\slider.png"
 			},
 			"xypad": {
-				"path": "D:\\VST\\SoundObject\\resource\\xypad.png"
+				"path": "C:\\D\\Repos\\SoundObject\\resource\\xypad.png"
 			},
 			"yzpad": {
-				"path": "D:\\VST\\SoundObject\\resource\\yzpad.png"
+				"path": "C:\\D\\Repos\\SoundObject\\resource\\yzpad.png"
 			}
 		},
 		"fonts": {
@@ -86,7 +86,7 @@
 		"custom": {
 			"FocusDrawing": {},
 			"VST3Editor": {
-				"Path": "D:\\VST\\SoundObject\\build\\VST3\\Debug\\SoundObject.vst3\\Contents\\Resources\\SoundObject.uidesc"
+				"Path": "C:\\D\\Repos\\SoundObject\\build\\VST3\\Debug\\SoundObject.vst3\\Contents\\Resources\\SoundObject.uidesc"
 			},
 			"UIGridController": {
 				"Grids": "1x 1,5x 5,10x 10,12x 12,15x 15",
@@ -1676,7 +1676,7 @@
 											"text-inset": "0, 0",
 											"text-rotation": "0",
 											"text-shadow-offset": "1, 1",
-											"title": "KHz",
+											"title": "kHz",
 											"transparent": "true",
 											"value-precision": "2",
 											"wants-focus": "false",
